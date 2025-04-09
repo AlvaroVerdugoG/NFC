@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "521264128358",
+    "project_id": "nfc-alvaro",
+    "storage_bucket": "nfc-alvaro.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:521264128358:android:30e5ed0e422b7c87f028a7",
+        "android_client_info": {
+          "package_name": "com.example.nfc"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyABJXMtfsLkrcox_oZo9kJ_nO5AmA7Dje4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
