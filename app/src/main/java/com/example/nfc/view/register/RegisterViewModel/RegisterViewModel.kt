@@ -1,4 +1,4 @@
-package com.example.nfc.view.register.SingUpViewModel
+package com.example.nfc.view.register.RegisterViewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,16 +13,16 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class SignUpViewModel @Inject constructor(private val fireBaseAuth: FireBaseAuth) :
+class RegisterViewModel @Inject constructor(private val fireBaseAuth: FireBaseAuth) :
     ViewModel() {
-    data class SignUpUIState(
+    data class RegisterUIState(
         var isLoading: Boolean = true,
         var errorMessage: String = "",
         var isSigIn: Boolean = false
     )
 
-    private val _uiState = MutableStateFlow(SignUpUIState())
-    val uiState: StateFlow<SignUpUIState> = _uiState
+    private val _uiState = MutableStateFlow(RegisterUIState())
+    val uiState: StateFlow<RegisterUIState> = _uiState
 
     fun register(email: String, password: String) {
 

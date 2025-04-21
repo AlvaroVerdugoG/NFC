@@ -5,7 +5,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.nfc.view.login.viewModel.LoginViewModel
-import com.example.nfc.view.register.SingUpViewModel.SignUpViewModel
+import com.example.nfc.view.register.RegisterViewModel.RegisterViewModel
 import com.example.nfc.view.route.RouteError
 import com.example.nfc.view.route.RouteHome
 import com.example.nfc.view.route.RouteLogIn
@@ -15,7 +15,7 @@ import com.example.nfc.view.screen.Screen
 @Composable
 fun NavigationGraph(
     loginViewModel: LoginViewModel,
-    signUpViewModel: SignUpViewModel
+    registerViewModel: RegisterViewModel
 ) {
     val navHostController = rememberNavController()
     NavHost(
@@ -34,11 +34,11 @@ fun NavigationGraph(
                         }
                     }
                 },
-                onSignUpClick = {
+                registerClick = {
                     navHostController.navigate(
-                        Screen.SignIn.route
+                        Screen.Register.route
                     ) {
-                        popUpTo(Screen.SignIn.route) {
+                        popUpTo(Screen.Register.route) {
                             inclusive = true
                             saveState = false
                         }
@@ -58,9 +58,9 @@ fun NavigationGraph(
 
             )
         }
-        composable(route = Screen.SignIn.route) {
+        composable(route = Screen.Register.route) {
             RouteSignUp(
-                onSignUpClick = {
+                registerClick = {
                     navHostController.navigate(
                         Screen.Home.route
                     ) {
@@ -80,7 +80,7 @@ fun NavigationGraph(
                         }
                     }
                 },
-                signUpViewModel = signUpViewModel,
+                registerViewModel = registerViewModel,
                 onMessageError = {
                     navHostController.navigate(
                         Screen.Error.route

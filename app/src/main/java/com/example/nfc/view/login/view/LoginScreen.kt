@@ -1,6 +1,5 @@
 package com.example.nfc.view.login.view
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,8 +15,6 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -28,24 +25,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.nfc.R
-import com.example.nfc.ui.theme.NFCTheme
 import com.example.nfc.util.components.LoginTextField
 import com.example.nfc.view.login.viewModel.LoginViewModel
-import dagger.hilt.android.AndroidEntryPoint
 
 
 @Composable
 fun LoginScreen(
     loginViewModel: LoginViewModel,
     onLoginClick: () -> Unit,
-    onSignUpClick: () -> Unit,
+    registerClick: () -> Unit,
     onErrorMessage: (String) -> Unit
 ) {
     val defaultPadding = dimensionResource(R.dimen.defaultPadding)
@@ -131,8 +124,8 @@ fun LoginScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text("Doesn't have an account?")
-            TextButton(onClick = onSignUpClick) {
-                Text("Sign up")
+            TextButton(onClick = registerClick) {
+                Text("Register")
             }
         }
     }
