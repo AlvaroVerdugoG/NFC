@@ -6,6 +6,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.nfc.view.login.viewModel.LoginViewModel
 import com.example.nfc.view.register.SingUpViewModel.SignUpViewModel
+import com.example.nfc.view.route.RouteError
 import com.example.nfc.view.route.RouteHome
 import com.example.nfc.view.route.RouteLogIn
 import com.example.nfc.view.route.RouteSignUp
@@ -94,6 +95,9 @@ fun NavigationGraph(
         }
         composable(route = Screen.Home.route) {
             RouteHome()
+        }
+        composable(route = Screen.Error.route) {
+            RouteError("")
         }
 
     }

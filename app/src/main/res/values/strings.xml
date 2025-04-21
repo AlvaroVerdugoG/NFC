@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">NFC</string>
-    <string name="service_description">Este servicio sirve  para emular NFC</string>
-    <string name="aid_group_description"> Descripción del grupo AID</string>
+    <string name="service_description">This service is used to emulate NFC.</string>
+    <string name="emulated_card"> Simulated card </string>
 </resources>
