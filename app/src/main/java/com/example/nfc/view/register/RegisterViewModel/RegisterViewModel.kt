@@ -16,7 +16,7 @@ import javax.inject.Inject
 class RegisterViewModel @Inject constructor(private val fireBaseAuth: FireBaseAuth) :
     ViewModel() {
     data class RegisterUIState(
-        var isLoading: Boolean = true,
+        var isLoading: Boolean = false,
         var errorMessage: String = "",
         var isSigIn: Boolean = false
     )
@@ -68,6 +68,18 @@ class RegisterViewModel @Inject constructor(private val fireBaseAuth: FireBaseAu
                 )
             }
 
+        }
+    }
+
+    fun checkPassword(password: String, confirmPassword: String): String {
+        return if (password.isEmpty()) {
+            "The password is required."
+        } else if (confirmPassword.isEmpty()) {
+            "You need to validate the password."
+        } else if (confirmPassword != password) {
+            "The passwords do not match."
+        } else {
+            ""
         }
     }
 }

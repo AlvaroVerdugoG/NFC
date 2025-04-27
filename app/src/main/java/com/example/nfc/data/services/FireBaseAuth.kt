@@ -19,7 +19,7 @@ class FireBaseAuth @Inject constructor() :
                 Either.Left(NFCError.Default)
             }
         } catch (e: Exception) {
-            Either.Left(NFCError.FireBaseError)
+            Either.Left(NFCError.FireBaseError(e.message ?: "Unknown error"))
         }
     }
 
@@ -32,7 +32,7 @@ class FireBaseAuth @Inject constructor() :
                 Either.Left(NFCError.Default)
             }
         } catch (e: Exception) {
-            Either.Left(NFCError.FireBaseError)
+            Either.Left(NFCError.FireBaseError(e.message ?: "Unknown error"))
         }
     }
 }

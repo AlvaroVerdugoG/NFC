@@ -5,10 +5,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.ui.Modifier
 import com.example.nfc.view.login.viewModel.LoginViewModel
 import com.example.nfc.view.navigation.NavigationGraph
 import com.example.nfc.view.register.RegisterViewModel.RegisterViewModel
@@ -22,14 +18,10 @@ class MainActivity @Inject constructor() : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        supportActionBar?.hide()
         enableEdgeToEdge()
         setContent {
-            Surface(
-                modifier = Modifier.fillMaxSize(),
-                color = MaterialTheme.colorScheme.background
-            ) {
-                NavigationGraph(signInViewModel, registerViewModel)
-            }
+            NavigationGraph(signInViewModel, registerViewModel)
         }
     }
 }

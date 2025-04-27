@@ -3,6 +3,7 @@ package com.example.nfc.view.login.viewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.nfc.data.services.FireBaseAuth
+import com.example.nfc.model.User
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,7 +27,7 @@ class LoginViewModel @Inject constructor(private val fireBaseAuth: FireBaseAuth)
     val uiState: StateFlow<LoginUIState> = _uiState
 
 
-    fun signIn(email: String, password: String) {
+    fun signIn(user: User) {
         _uiState.update { currentState ->
             currentState.copy(
                 isLoading = true
@@ -34,7 +35,7 @@ class LoginViewModel @Inject constructor(private val fireBaseAuth: FireBaseAuth)
         }
         viewModelScope.launch{
             withContext(Dispatchers.IO){
-                fireBaseAuth.signIn(email,password).fold (
+                fireBaseAuth.signIn(user.email, user.password).fold (
                     error = {
                         _uiState.update { currentState ->
                         currentState.copy(
