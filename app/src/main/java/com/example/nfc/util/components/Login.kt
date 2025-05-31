@@ -29,7 +29,8 @@ fun LoginTextField(
     labelText: String,
     leadingIcon: ImageVector? = null,
     keyboardType: KeyboardType = KeyboardType.Text,
-    isPassword: Boolean = false
+    isPassword: Boolean = false,
+    enabled: Boolean = true
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
     OutlinedTextField(
@@ -49,7 +50,8 @@ fun LoginTextField(
                     )
                 }
             }
-        }
+        },
+        enabled = enabled
     )
 }
 /*

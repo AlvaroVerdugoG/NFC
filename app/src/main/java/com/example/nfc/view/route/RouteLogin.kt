@@ -9,12 +9,12 @@ fun RouteLogIn(
     loginViewModel: LoginViewModel,
     onLoginClick: () -> Unit,
     registerClick: () -> Unit,
-    onMessageError: (String) -> Unit
+    onForgetPasswordClick: () -> Unit
 ) {
     LoginScreen(
         loginViewModel = loginViewModel,
         onLoginClick = onLoginClick,
         registerClick = registerClick,
-        onErrorMessage = onMessageError
+        onForgetPasswordClick = onForgetPasswordClick
     )
 }

@@ -9,12 +9,10 @@ fun RouteSignUp(
     registerViewModel: RegisterViewModel,
     registerClick: () -> Unit,
     onSignInClick: () -> Unit,
-    onMessageError: (String) -> Unit
 ) {
     RegisterScreen(
         registerViewModel = registerViewModel,
         registerClick = registerClick,
         onSignInClick = onSignInClick,
-        onErrorMessage = onMessageError
     )
 }

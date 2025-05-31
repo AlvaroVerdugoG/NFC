@@ -9,13 +9,18 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import com.example.nfc.R
 
 @Composable
 fun Menu(
     expanded: Boolean,
     onDismissRequest: () -> Unit,
+    onFAQClick: () -> Unit,
+    onAboutClick: () -> Unit,
+    onDeleteAccountClick: () -> Unit,
 ) {
     DropdownMenu(
         expanded = expanded,
@@ -26,12 +31,16 @@ fun Menu(
         offset = DpOffset(x = (-0).dp, y = 0.dp)
     ) {
         DropdownMenuItem(
-            text = { Text("Opción 1") },
-            onClick = { }
+            text = { Text(stringResource(R.string.faq)) },
+            onClick = onFAQClick
         )
         DropdownMenuItem(
-            text = { Text("Opción 2") },
-            onClick = { }
+            text = { Text(stringResource(R.string.about)) },
+            onClick = onAboutClick
+        )
+        DropdownMenuItem(
+            text = { Text(stringResource(R.string.delete_account)) },
+            onClick = onDeleteAccountClick
         )
     }
 }

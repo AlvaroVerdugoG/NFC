@@ -1,34 +1,68 @@
 package com.example.nfc.data.services
 
+import android.content.ComponentName
+import android.content.pm.PackageManager
 import android.nfc.cardemulation.HostApduService
 import android.os.Bundle
-
+import android.util.Log
 
 class MyHostApduService : HostApduService() {
+
     companion object {
-        var isEnabled = false
+
+        private const val SELECT_APDU_HEADER = "00A40400"
+        private const val AID = "F0010203040506"
+        var enable: Boolean = false
+
+        fun buildSelectApdu(aid: String): String {
+            // Convierte el string AID a un array de bytes
+            val aidLength = aid.length / 2
+            val lengthHex = String.format("%02X", aidLength)
+            return SELECT_APDU_HEADER + lengthHex + aid
+        }
+
+        fun bytesToHex(bytes: ByteArray): String {
+            val hexArray = "0123456789ABCDEF".toCharArray()
+            val hexChars = CharArray(bytes.size * 2)
+            for (i in bytes.indices) {
+                val v = bytes[i].toInt() and 0xFF
+                hexChars[i * 2] = hexArray[v ushr 4]
+                hexChars[i * 2 + 1] = hexArray[v and 0x0F]
+            }
+            return String(hexChars)
+        }
+
+        fun hexStringToByteArray(hex: String): ByteArray {
+            val length = hex.length
+            val data = ByteArray(length / 2)
+            for (i in 0 until length step 2) {
+                data[i / 2] =
+                    ((Character.digit(hex[i], 16) shl 4) + Character.digit(hex[i + 1], 16)).toByte()
+            }
+            return data
+        }
     }
 
-    private val SELECT_APDU: ByteArray = byteArrayOf(0x00, 0xA4.toByte(), 0x04, 0x00)
+    override fun processCommandApdu(commandApdu: ByteArray, extras: Bundle?): ByteArray {
+        val commandStr = bytesToHex(commandApdu)
+        Log.d("Comunicacion", "APDU recibido: $commandStr")
 
+        return if (enable) {
+            if (commandStr.contains(AID)) {
+                Log.d("Comunicacion", "Comando SELECT AID recibido correctamente.")
+                hexStringToByteArray("9000")
+            } else {
+                hexStringToByteArray("6F00")
+            }
+        } else {
+            hexStringToByteArray("6F00")
 
-    private val ACCESS_GRANTED_RESPONSE: ByteArray = byteArrayOf(
-        0xD3.toByte(), 0xAC.toByte(), 0x0F, 0x2F,
-        0x90.toByte(), 0x00
-    )
-
-    override fun processCommandApdu(commandApdu: ByteArray?, extras: Bundle?): ByteArray? {
-        if (commandApdu == null) return null
-        if (!isEnabled) {
-            return byteArrayOf(0x69.toByte(), 0x85.toByte())
         }
-        if (commandApdu.contentEquals(SELECT_APDU)) {
-            return ACCESS_GRANTED_RESPONSE
-        }
-        return byteArrayOf(0x6F.toByte(), 0x00)
     }
 
     override fun onDeactivated(reason: Int) {
-        isEnabled = false
+        enable = false
     }
+
+
 }

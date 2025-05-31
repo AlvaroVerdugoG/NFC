@@ -3,6 +3,7 @@ package com.example.nfc.view.login.view
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -31,7 +33,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.nfc.R
@@ -45,34 +49,43 @@ fun LoginScreen(
     loginViewModel: LoginViewModel,
     onLoginClick: () -> Unit,
     registerClick: () -> Unit,
-    onErrorMessage: (String) -> Unit
+    onForgetPasswordClick: () -> Unit
 ) {
+    val context = LocalContext.current
+    val uiState by loginViewModel.uiState.collectAsState()
+
+    loginViewModel.getUserEmail()
     val defaultPadding = dimensionResource(R.dimen.defaultPadding)
     val itemSpacing = dimensionResource(R.dimen.itemSpacing)
-    var email by remember {
-        mutableStateOf("")
-    }
-    var userPassword by remember {
-        mutableStateOf("")
-    }
+    var user by remember { mutableStateOf(User(email = uiState.email)) }
     var checked by remember {
-        mutableStateOf(false)
+        mutableStateOf(loginViewModel.getBoolean())
     }
-    val uiState by loginViewModel.uiState.collectAsState()
+
 
     LaunchedEffect(key1 = uiState.isSigIn) {
         if (uiState.isSigIn) {
             onLoginClick()
+            loginViewModel.resetLoginStatus()
         }
     }
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(Color(0xFFF5F5F5))
             .padding(all = defaultPadding),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
 
     ) {
+        Text(
+            text = stringResource(R.string.welcome_text),
+            style = MaterialTheme.typography.titleLarge,
+            color = Color(0xFF004D40)
+        )
+
+        Spacer(modifier = Modifier.height(38.dp))
+
         AnimatedVisibility(
             visible = uiState.errorMessage.isNotEmpty(),
             enter = fadeIn(),
@@ -81,21 +94,22 @@ fun LoginScreen(
             Text(
                 text = uiState.errorMessage,
                 style = MaterialTheme.typography.bodyLarge,
-                color = Color.Red
+                color = Color(0xFFD32F2F)
             )
         }
+        Spacer(Modifier.height(itemSpacing))
         LoginTextField(
-            value = email,
-            onValueChange = { email = it },
-            labelText = "Email",
+            value = user.email,
+            onValueChange = { user = user.copy(email = it) },
+            labelText = stringResource(R.string.email),
             leadingIcon = Icons.Default.Person,
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(Modifier.height(itemSpacing))
         LoginTextField(
-            value = userPassword,
-            onValueChange = { userPassword = it },
-            labelText = "Password",
+            value = user.password,
+            onValueChange = { user = user.copy(password = it) },
+            labelText = stringResource(R.string.password),
             leadingIcon = Icons.Default.Lock,
             modifier = Modifier.fillMaxWidth(),
             keyboardType = KeyboardType.Password,
@@ -113,26 +127,36 @@ fun LoginScreen(
                 ) {
                 Checkbox(
                     checked = checked,
-                    onCheckedChange = { checked = it }
+                    onCheckedChange = {
+                        checked = it
+                        loginViewModel.setUserEmailPreferences(user.email, checked)
+                    }
                 )
                 Text(
-                    text = "Remember me"
+                    text = stringResource(R.string.remember_me)
                 )
             }
-            TextButton(onClick = {}) {
-                Text("Forgot Password?")
+            TextButton(onClick = onForgetPasswordClick) {
+                Text(stringResource(R.string.forgot_password))
             }
         }
         Spacer(Modifier.height(itemSpacing))
-        Button(onClick = {
-            val user = User(email = email, password = userPassword)
-            loginViewModel.signIn(user)
-        }, modifier = Modifier.fillMaxWidth()) {
-            Text("Login")
-            if (uiState.isLoading) {
+        Button(
+            onClick = {
+                loginViewModel.signIn(context, user)
+
+            },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF0077CC)
+            )
+        ) {
+            Text(stringResource(R.string.sign_in))
+            if (uiState.isSigIn) {
                 CircularProgressIndicator(
                     modifier = Modifier.size(24.dp),
-                    strokeWidth = 2.dp
+                    strokeWidth = 2.dp,
+                    color = Color.White
                 )
             }
 
@@ -143,9 +167,9 @@ fun LoginScreen(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("Doesn't have an account?")
+            Text(stringResource(R.string.account_question))
             TextButton(onClick = registerClick) {
-                Text("Register")
+                Text(stringResource(R.string.register))
             }
         }
     }

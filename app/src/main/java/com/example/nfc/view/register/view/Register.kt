@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -27,12 +28,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.nfc.R
+import com.example.nfc.model.User
 import com.example.nfc.util.components.LoginTextField
 import com.example.nfc.view.register.RegisterViewModel.RegisterViewModel
 
@@ -41,26 +43,13 @@ fun RegisterScreen(
     registerViewModel: RegisterViewModel,
     registerClick: () -> Unit,
     onSignInClick: () -> Unit,
-    onErrorMessage: (String) -> Unit
 ) {
     val defaultPadding = dimensionResource(R.dimen.defaultPadding)
     val itemSpacing = dimensionResource(R.dimen.itemSpacing)
 
-    var firstName by remember {
-        mutableStateOf("")
-    }
-    var lastName by remember {
-        mutableStateOf("")
-    }
-    var email by remember {
-        mutableStateOf("")
-    }
-    var password by remember {
-        mutableStateOf("")
-    }
-    var confirmPassword by remember {
-        mutableStateOf("")
-    }
+    var user by remember { mutableStateOf(User()) }
+    val context = LocalContext.current
+
     var passwordError by remember {
         mutableStateOf("")
     }
@@ -69,6 +58,7 @@ fun RegisterScreen(
     LaunchedEffect(key1 = uiState.isSigIn) {
         if (uiState.isSigIn) {
             registerClick()
+            registerViewModel.resetRegisterStatus()
         }
     }
 
@@ -90,50 +80,62 @@ fun RegisterScreen(
                 color = Color.Red
             )
         }
+
+        Spacer(Modifier.height(itemSpacing))
+
         LoginTextField(
-            value = firstName,
-            onValueChange = { firstName = it },
-            labelText = "First Name",
+            value = user.name,
+            onValueChange = { user = user.copy(name = it) },
+            labelText = stringResource(R.string.first_name),
             modifier = Modifier.fillMaxWidth()
         )
+
         Spacer(Modifier.height(itemSpacing))
+
         LoginTextField(
-            value = lastName,
-            onValueChange = { lastName = it },
-            labelText = "Last Name",
+            value = user.lastName,
+            onValueChange = { user = user.copy(lastName = it) },
+            labelText = stringResource(R.string.last_name),
             modifier = Modifier.fillMaxWidth()
         )
+
         Spacer(Modifier.height(itemSpacing))
+
         LoginTextField(
-            value = email,
-            onValueChange = { email = it },
-            labelText = "Email",
+            value = user.email,
+            onValueChange = { user = user.copy(email = it) },
+            labelText = stringResource(R.string.email),
             modifier = Modifier.fillMaxWidth()
         )
+
         Spacer(Modifier.height(itemSpacing))
+
         LoginTextField(
-            value = password,
+            value = user.password,
             onValueChange = {
-                password = it
-                passwordError = registerViewModel.checkPassword(password, confirmPassword)
+                user = user.copy(password = it)
+                passwordError = registerViewModel.checkPassword(context, user.password, user.confirmPassword)
             },
-            labelText = "Password",
+            labelText = stringResource(R.string.password),
             modifier = Modifier.fillMaxWidth(),
             keyboardType = KeyboardType.Password,
             isPassword = true
         )
+
         Spacer(Modifier.height(itemSpacing))
+
         LoginTextField(
-            value = confirmPassword,
+            value = user.confirmPassword,
             onValueChange = {
-                confirmPassword = it
-                passwordError = registerViewModel.checkPassword(password, confirmPassword)
+                user = user.copy(confirmPassword = it)
+                passwordError = registerViewModel.checkPassword(context, user.password, user.confirmPassword)
             },
-            labelText = "Confirm Password",
+            labelText = stringResource(R.string.confirm_password),
             modifier = Modifier.fillMaxWidth(),
             keyboardType = KeyboardType.Password,
             isPassword = true
         )
+
         AnimatedVisibility(
             visible = passwordError.isNotEmpty(),
             enter = fadeIn(),
@@ -145,13 +147,14 @@ fun RegisterScreen(
                 color = Color.Red
             )
         }
+
         Spacer(Modifier.height(itemSpacing))
+
         Button(
             onClick = {
-                    registerViewModel.register(email = email, password = password)
+                registerViewModel.register(context, user)
             },
-            enabled = passwordError.isEmpty() && email.isNotEmpty()
-                    && firstName.isNotEmpty() && lastName.isNotEmpty(),
+            enabled = passwordError.isEmpty() && user.isCorrect(),
             modifier = Modifier.fillMaxWidth()
         ) {
             if (uiState.isLoading) {
@@ -159,25 +162,59 @@ fun RegisterScreen(
                     modifier = Modifier.size(24.dp),
                     strokeWidth = 2.dp
                 )
-            }else {
-                Text("Register")
+            } else {
+                Text(stringResource(R.string.register))
             }
         }
+
         Spacer(Modifier.height(24.dp))
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
 
-            Text("Already have an account?")
+            Text(stringResource(R.string.have_an_account))
             TextButton(onClick = onSignInClick) {
-                Text("Sign in")
+                Text(stringResource(R.string.sign_in))
             }
         }
-    }
+        if (uiState.confirmEmail) {
+            AlertDialog(
+                onDismissRequest = { registerViewModel.resetConfirmEmail()
+                                   registerViewModel.resetRegisterStatus()
+                                   },
+                title = { Text(text = stringResource(R.string.confirm_email_title)) },
+                text = {
+                    Text(
+                        text = stringResource(R.string.confirm_email_text)
+                    )
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            registerViewModel.signIn(context,user)
 
+                        }
+                    ) {
+                        Text(text = stringResource(R.string.its_done))
+                    }
+                },
+                dismissButton = {
+                    TextButton(
+                        onClick = {
+                            registerViewModel.resendVerificationEmail(context)
+                        }
+                    ) {
+                        Text(text = stringResource(R.string.resend_email))
+                    }
+                },
+            )
+        }
+    }
 }
+
 /*
 @Preview(showSystemUi = true)
 @Composable

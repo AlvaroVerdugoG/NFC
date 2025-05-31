@@ -11,9 +11,7 @@ composeBom = "2024.04.01"
 materialIconsExtended = "1.7.8"
 navigationCompose = "2.8.6"
 daggerHilt = "2.56.1"
-hiltNavigation = "2.56.1"
-firebaseAuth = "23.2.0"
-org-jetbrains-kotlin-android = "1.8.3"
+firebaseStorage = "21.0.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
