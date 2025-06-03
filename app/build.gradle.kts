@@ -65,6 +65,7 @@ dependencies {
     implementation ("com.google.dagger:hilt-android:2.56.1")
     annotationProcessor ("com.google.dagger:hilt-compiler:2.56.1")
     implementation("io.coil-kt:coil-compose:2.2.2")
+    implementation("com.github.bumptech.glide:glide:4.12.0")
     implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)
     testImplementation(libs.junit)

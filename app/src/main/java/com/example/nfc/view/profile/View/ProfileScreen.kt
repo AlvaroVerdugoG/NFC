@@ -29,11 +29,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.nfc.R
-
-import com.example.nfc.util.components.LoginTextField
 import com.example.nfc.view.profile.viewModel.ProfileViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -44,12 +41,12 @@ fun AccountScreen(
     onBackClick: () -> Unit
 ) {
     val uiState by accountViewModel.uiState.collectAsState()
+    val context = LocalContext.current
+    accountViewModel.fetchUserData(context)
 
     var showPhotoDialog by remember { mutableStateOf(false) }
     var isEditable by remember { mutableStateOf(false) }
     var password by remember { mutableStateOf("") }
-
-    val context = LocalContext.current
 
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -72,7 +69,6 @@ fun AccountScreen(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
-            accountViewModel.createImageFile()
             accountViewModel.launchCamera(cameraLauncher)
         } else {
             Toast.makeText(
@@ -84,7 +80,7 @@ fun AccountScreen(
 
     }
 
-    accountViewModel.fetchUserData(context)
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -144,14 +140,14 @@ fun AccountScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            if (uiState.user != null && uiState.user?.profilePhotoUrl?.isNotEmpty() == true) {
+            if (uiState.user != null && uiState.user!!.profilePhotoUrl.isNotEmpty()) {
                 AsyncImage(
                     model = uiState.user!!.profilePhotoUrl,
                     contentDescription = stringResource(R.string.profile_photo),
                     modifier = Modifier
                         .size(120.dp)
                         .clip(CircleShape),
-                    contentScale = ContentScale.Crop
+                    contentScale = ContentScale.FillBounds
                 )
             } else {
                 Icon(

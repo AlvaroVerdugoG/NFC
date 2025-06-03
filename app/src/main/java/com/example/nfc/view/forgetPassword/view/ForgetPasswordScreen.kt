@@ -89,11 +89,6 @@ fun ForgetPasswordScreen(
                     color = Color(0xFFD32F2F)
                 )
             }
-            Text(
-                text = stringResource(R.string.forget_password),
-                style = MaterialTheme.typography.bodyLarge,
-                textAlign = TextAlign.Center
-            )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = stringResource(R.string.instruction_info),

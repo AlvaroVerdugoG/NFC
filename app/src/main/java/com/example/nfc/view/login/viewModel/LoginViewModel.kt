@@ -26,7 +26,7 @@ class LoginViewModel @Inject constructor(
         var isLoading: Boolean = true,
         var errorMessage: String = "",
         var isSigIn: Boolean = false,
-        var email: String = ""
+
     )
 
 
@@ -78,14 +78,8 @@ class LoginViewModel @Inject constructor(
     fun getBoolean(): Boolean{
         return sharedPreferences.getBooleanUserData()
     }
-    fun getUserEmail() {
-        if(sharedPreferences.getBooleanUserData()) {
-            _uiState.update { currentState ->
-                currentState.copy(
-                    email = sharedPreferences.getEmail()
-                )
-            }
-        }
+    fun getUserEmail(): String {
+        return sharedPreferences.getEmail()
     }
     fun setUserEmailPreferences(email: String, isChecked: Boolean){
         sharedPreferences.setBooleanUserData(isChecked)

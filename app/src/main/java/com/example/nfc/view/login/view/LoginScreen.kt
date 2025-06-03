@@ -54,10 +54,9 @@ fun LoginScreen(
     val context = LocalContext.current
     val uiState by loginViewModel.uiState.collectAsState()
 
-    loginViewModel.getUserEmail()
     val defaultPadding = dimensionResource(R.dimen.defaultPadding)
     val itemSpacing = dimensionResource(R.dimen.itemSpacing)
-    var user by remember { mutableStateOf(User(email = uiState.email)) }
+    var user by remember { mutableStateOf(User(email = loginViewModel.getUserEmail())) }
     var checked by remember {
         mutableStateOf(loginViewModel.getBoolean())
     }

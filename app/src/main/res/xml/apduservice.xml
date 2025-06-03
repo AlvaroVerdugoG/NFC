@@ -2,5 +2,6 @@
     android:requireDeviceUnlock="false">
     <aid-group android:description="@string/emulated_card" android:category="other">
         <aid-filter android:name="F0010203040506" />
+        <aid-filter android:name="F0010203040505" />
     </aid-group>
 </host-apdu-service>

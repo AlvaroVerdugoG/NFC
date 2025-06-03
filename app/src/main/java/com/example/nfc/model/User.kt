@@ -1,6 +1,7 @@
 package com.example.nfc.model
 
-import java.io.StringBufferInputStream
+import android.net.Uri
+
 
 data class User(
     var name: String = "",
@@ -15,7 +16,7 @@ data class User(
             "name" to name,
             "lastName" to lastName,
             "email" to email,
-            "profilePhotoUrl" to profilePhotoUrl
+            "profilePhotoUrl" to profilePhotoUrl.toString()
         )
     }
 

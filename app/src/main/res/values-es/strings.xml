@@ -10,13 +10,15 @@
     <string name="gallery_or_photo">¿Deseas tomar una nueva foto o seleccionar una de la galería?</string>
     <string name="take_photo">Tomar una foto</string>
     <string name="gallery">Galería</string>
-    <string name="user_name">Nombre de usuario:</string>
+    <string name="user_name">Usuario:</string>
     <string name="password">Contraseña</string>
     <string name="change_password">Cambiar contraseña</string>
     <string name="sign_out">Cerrar sesión</string>
     <string name="email">Correo electrónico</string>
     <string name="last_name">Apellido</string>
+    <string name="last_name_card">Apellido:</string>
     <string name="first_name">Nombre</string>
+    <string name="first_name_card">Nombre:</string>
     <string name="confirm_password">Confirmar contraseña</string>
     <string name="register">Registrarse</string>
     <string name="sign_in">Iniciar sesión</string>
@@ -75,5 +77,23 @@
     <string name="version"> Versión: </string>
     <string name="develop"> Desarrollador: </string>
     <string name="develop_name"> Álvaro Verdugo González </string>
+    <string name="error_string_empty">La cadena proporcionada está vacía o es nula.</string>
+    <string name="error_password_wrong"> Contraseñá incorrecta. </string>
+    <string name="error_user_not_exist"> No existe una cuenta con este correo. </string>
+    <string name="error_user_disabled"> Esta cuenta ha sido deshabilitada. </string>
+    <string name="error_too_many_tries"> Demasiados intentos fallidos, intenta más tarde. </string>
+    <string name="error_conection"> Problema de conexión. Verifica tu internet. </string>
+    <string name="error_email_not_verified">Correo electrónico no verificado.
+Por favor, revisa tu correo y sigue el enlace de confirmación.</string>
+    <string name="error_invalid_credential">La credencial de autenticación es incorrecta o ha expirado.</string>
+    <string name="error_permission_denied">No tienes permisos para acceder a estos datos.</string>
+    <string name="error_user_not_found">No existe una cuenta con este correo.</string>
+    <string name="error_unavailable">El servicio no está disponible en este momento.</string>
+    <string name="error_deadline_exceeded">La consulta tardó demasiado en responder.</string>
+    <string name="error_aborted">Se canceló la operación.</string>
+    <string name="card_transport_text"> Tarjeta Transporte NFC UPM </string>
+    <string name="card_transport_icon1"> Bus. </string>
+    <string name="card_transport_icon2"> Metro. </string>
+    <string name="card_transport_icon3"> Otros servicios. </string>
 </resources>
 

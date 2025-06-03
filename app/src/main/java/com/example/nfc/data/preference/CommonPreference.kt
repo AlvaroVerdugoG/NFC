@@ -21,7 +21,8 @@ class CommonPreference @Inject constructor(private val sharedPreferences: Shared
     }
 
     override fun getEmail(): String {
-        return sharedPreferences.getString(EMAIL_PREFS, "en") ?: "en"
+        return (sharedPreferences.getString(EMAIL_PREFS, "") ?: "")
+
     }
 
     override fun setEmail(email: String) {

@@ -10,13 +10,15 @@
     <string name="gallery_or_photo"> Do you want to take a new photo or select one from the gallery? </string>
     <string name="take_photo"> Take a photo </string>
     <string name="gallery"> Gallery </string>
-    <string name="user_name"> User name: </string>
+    <string name="user_name"> User: </string>
     <string name="password"> Password  </string>
     <string name="change_password"> Change Password </string>
     <string name="sign_out"> Sign out </string>
     <string name="email"> Email </string>
-    <string name="last_name"> Last Name </string>
-    <string name="first_name"> First Name </string>
+    <string name="last_name">Last Name</string>
+    <string name="last_name_card">Last Name:</string>
+    <string name="first_name">Name</string>
+    <string name="first_name_card">Name:</string>
     <string name="confirm_password"> Confirm Password </string>
     <string name="register"> Register </string>
     <string name="sign_in"> Sign In </string>
@@ -76,4 +78,22 @@ Then follow the instructions. </string>
     <string name="version"> Version: </string>
     <string name="develop"> Developer: </string>
     <string name="develop_name"> Álvaro Verdugo González </string>
+    <string name="error_string_empty">Given String is empty or null</string>
+    <string name="error_password_wrong">Incorrect password.</string>
+    <string name="error_user_not_exist">No account exists with this email.</string>
+    <string name="error_user_disabled">This account has been disabled.</string>
+    <string name="error_too_many_tries">Too many failed attempts, try again later.</string>
+    <string name="error_conection">Connection problem. Check your internet.</string>
+    <string name="error_email_not_verified"> Email not verified.
+Please check your email and follow the confirmation link. </string>
+    <string name="error_invalid_credential"> The authentication credential is invalid or has expired. </string>
+    <string name="error_permission_denied"> You do not have permission to access this data. </string>
+    <string name="error_user_not_found"> No account exists with this email. </string>
+    <string name="error_unavailable"> The service is currently unavailable. </string>
+    <string name="error_deadline_exceeded"> The request took too long to respond .</string>
+    <string name="error_aborted"> The operation was canceled. </string>
+    <string name="card_transport_text"> NFC UPM Transport Card </string>
+    <string name="card_transport_icon1"> Bus. </string>
+    <string name="card_transport_icon2"> Metro. </string>
+    <string name="card_transport_icon3"> Other services. </string>
 </resources>

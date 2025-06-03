@@ -1,13 +1,17 @@
 package com.example.nfc.data.services
 
+import android.content.Context
+import android.util.Log
+import com.example.nfc.R
 import com.example.nfc.model.Either
 import com.example.nfc.model.error.NFCError
 import com.example.nfc.model.error.Success
 import com.google.firebase.auth.FirebaseAuth
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
-class FireBaseAuth @Inject constructor() :
+class FireBaseAuth @Inject constructor(@ApplicationContext private val context: Context) :
     FireBaseAuthService {
     private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     override suspend fun register(email: String, password: String): Either<NFCError, Success> {
@@ -21,7 +25,8 @@ class FireBaseAuth @Inject constructor() :
                 Either.Left(NFCError.Default)
             }
         } catch (e: Exception) {
-            Either.Left(NFCError.FireBaseError(e.message ?: "Unknown error"))
+            val error = handleError(e.message ?: context.getString(R.string.unexpected_error))
+            Either.Left(NFCError.FireBaseError(error))
         }
     }
 
@@ -36,14 +41,16 @@ class FireBaseAuth @Inject constructor() :
                 } else {
                     firebaseAuth.signOut()
                     Either.Left(
-                        NFCError.FireBaseError("Email not verified.\nPlease check your email and follow the confirmation link.")
+                        NFCError.FireBaseError(context.getString(R.string.error_email_not_verified))
                     )
                 }
             } else {
                 Either.Left(NFCError.Default)
             }
         } catch (e: Exception) {
-            Either.Left(NFCError.FireBaseError(e.message ?: "Unknown error"))
+            Log.d("Error", e.toString())
+            val error = handleError(e.message ?: context.getString(R.string.unexpected_error))
+            Either.Left(NFCError.FireBaseError(error))
         }
     }
 
@@ -52,7 +59,8 @@ class FireBaseAuth @Inject constructor() :
             firebaseAuth.signOut()
             Either.Right(Success)
         } catch (e: Exception) {
-            Either.Left(NFCError.FireBaseError(e.message ?: "Unknown error."))
+            val error = handleError(e.message ?: context.getString(R.string.unexpected_error))
+            Either.Left(NFCError.FireBaseError(error))
         }
     }
 
@@ -62,7 +70,8 @@ class FireBaseAuth @Inject constructor() :
             user?.updatePassword(password)
             Either.Right(Success)
         } catch (e: Exception) {
-            Either.Left(NFCError.FireBaseError(e.message ?: "Unknown error."))
+            val error = handleError(e.message ?: context.getString(R.string.unexpected_error))
+            Either.Left(NFCError.FireBaseError(error))
         }
 
     }
@@ -77,7 +86,8 @@ class FireBaseAuth @Inject constructor() :
                 Either.Left(NFCError.Default)
             }
         } catch (e: Exception) {
-            Either.Left(NFCError.FireBaseError(e.message ?: "Unknown error."))
+            val error = handleError(e.message ?: context.getString(R.string.unexpected_error))
+            Either.Left(NFCError.FireBaseError(error))
         }
     }
 
@@ -86,7 +96,8 @@ class FireBaseAuth @Inject constructor() :
             firebaseAuth.sendPasswordResetEmail(email).await()
             Either.Right(Success)
         } catch (e: Exception) {
-            Either.Left(NFCError.FireBaseError(e.message ?: "Unknown error"))
+            val error = handleError(e.message ?: context.getString(R.string.unexpected_error))
+            Either.Left(NFCError.FireBaseError(error))
         }
     }
 
@@ -96,12 +107,13 @@ class FireBaseAuth @Inject constructor() :
             if (user != null) {
                 user.delete().await()
                 Either.Right(Success)
-            } else{
-                Either.Left(NFCError.FireBaseError("Unknown error"))
+            } else {
+                Either.Left(NFCError.FireBaseError(context.getString(R.string.unexpected_error)))
             }
 
         } catch (e: Exception) {
-            Either.Left(NFCError.FireBaseError(e.message ?: "Unknown error"))
+            val error = handleError(e.message ?: context.getString(R.string.unexpected_error))
+            Either.Left(NFCError.FireBaseError(error))
         }
     }
 
@@ -109,4 +121,26 @@ class FireBaseAuth @Inject constructor() :
         firebaseAuth.currentUser?.reload()
         return firebaseAuth.currentUser?.email.orEmpty()
     }
+
+    private fun handleError(errorMessage: String): String {
+        return when {
+            errorMessage.contains("String is empty", ignoreCase = true) ->
+                context.getString(R.string.error_string_empty)
+            errorMessage.contains("wrong password", ignoreCase = true) ->
+                context.getString(R.string.error_password_wrong)
+            errorMessage.contains("Invalid credential", ignoreCase = true) ->
+                context.getString(R.string.error_invalid_credential)
+            errorMessage.contains("auth/user-disabled", ignoreCase = true) ->
+                context.getString(R.string.error_user_disabled)
+            errorMessage.contains("usernot found", ignoreCase = true) ->
+                context.getString(R.string.error_user_not_found)
+            errorMessage.contains("too many requests", ignoreCase = true) ->
+                context.getString(R.string.error_too_many_tries)
+            errorMessage.contains("network error", ignoreCase = true) ->
+                context.getString(R.string.error_conection)
+            else ->
+                context.getString(R.string.unexpected_error)
+        }
+    }
+
 }
