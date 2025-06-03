@@ -5,6 +5,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.example.nfc.util.security.AES
 import com.example.nfc.view.aboutInfo.viewModel.AboutInfoViewModel
 import com.example.nfc.view.deleteAccount.viewModel.DeleteAccountViewModel
 import com.example.nfc.view.faqScreen.viewModel.FAQViewModel
@@ -16,6 +17,7 @@ import com.example.nfc.view.profile.viewModel.ProfileViewModel
 import com.example.nfc.view.register.RegisterViewModel.RegisterViewModel
 import com.google.firebase.FirebaseApp
 import dagger.hilt.android.AndroidEntryPoint
+import java.io.File
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -33,6 +35,13 @@ class MainActivity @Inject constructor() : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         supportActionBar?.hide()
         enableEdgeToEdge()
+
+        val ficheroClave = File(this.filesDir, "aeskeyiv")
+        if (!ficheroClave.exists()) {
+            val aes = AES(this)
+            aes.doGenerateKey()
+        }
+
         FirebaseApp.initializeApp(this)
         setContent {
             NavigationGraph(

@@ -63,6 +63,8 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore-ktx:25.1.4")
     implementation("com.google.firebase:firebase-storage-ktx")
     implementation ("com.google.dagger:hilt-android:2.56.1")
+    implementation(files("libs\\bcpkix-jdk15on-168.jar"))
+    implementation(files("libs\\bcprov-jdk15on-168.jar"))
     annotationProcessor ("com.google.dagger:hilt-compiler:2.56.1")
     implementation("io.coil-kt:coil-compose:2.2.2")
     implementation(libs.hilt.android)
