@@ -80,7 +80,7 @@ class MyHostApduService : HostApduService() {
         Log.d("Comunicacion", "APDU recibido: $commandStr")
 
         if (enable) {
-            if (commandStr.contains(AID)) {
+            if (commandStr.contains(AI--D)) {
                 Log.d("Comunicacion", "Comando SELECT AID recibido correctamente.")
                 when (messageCounter) {
                     0 -> {
