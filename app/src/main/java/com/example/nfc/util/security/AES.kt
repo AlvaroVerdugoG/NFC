@@ -2,12 +2,11 @@ package com.example.nfc.util.security
 
 import android.content.Context
 import android.util.Base64
+import org.bouncycastle.crypto.BufferedBlockCipher
 import org.bouncycastle.crypto.CipherParameters
 import org.bouncycastle.crypto.engines.AESEngine
-import org.bouncycastle.crypto.modes.CBCBlockCipher
 import org.bouncycastle.crypto.paddings.PaddedBufferedBlockCipher
 import org.bouncycastle.crypto.params.KeyParameter
-import org.bouncycastle.crypto.params.ParametersWithIV
 import org.bouncycastle.util.Arrays
 import java.io.BufferedReader
 import java.io.File
@@ -55,7 +54,8 @@ class AES(var context: Context) {
             //Escribo en el fichero que guarda la clave privada
             try {
                 val ficheroPublicaEscritura = PrintWriter(FileWriter(ficheroPublica))
-                ficheroPublicaEscritura.println(String(Base64.encode(key, Base64.NO_WRAP)))
+                val keyOnly = Arrays.copyOfRange(key, 0, 16)
+                ficheroPublicaEscritura.println(Base64.encodeToString(keyOnly, Base64.NO_WRAP))
                 ficheroPublicaEscritura.close()
             } catch (e: IOException) {
                 e.printStackTrace()
@@ -77,13 +77,10 @@ class AES(var context: Context) {
             val res = encrypt(
                 text,
                 Arrays.copyOfRange(key, 0, 16),
-                Arrays.copyOfRange(key, 16, 16 + blockSize)
             )
-            texto = Base64.encode(res, Base64.NO_WRAP)
-            println(
-                "Texto cifrado (en Base64):"
-                        + String(texto)
-            )
+            if (res != null) {
+                texto = res
+            }
         }
         return texto
     }
@@ -101,11 +98,7 @@ class AES(var context: Context) {
         val lectorClave = BufferedReader(FileReader(ficheroClave))
         val key = Base64.decode(lectorClave.readLine(), Base64.NO_WRAP)
         return if (key != null) {
-            decrypt(
-                Base64.decode(text, Base64.NO_WRAP),
-                Arrays.copyOfRange(Base64.decode(key, Base64.NO_WRAP), 0, 16),
-                Arrays.copyOfRange(Base64.decode(key, Base64.NO_WRAP), 16, blockSize + 16)
-            )
+            decrypt(text, key)
         } else null
     }
 
@@ -143,7 +136,7 @@ class AES(var context: Context) {
          */
         @Throws(Exception::class)
         private fun cipherData(
-            cipher: PaddedBufferedBlockCipher,
+            cipher: BufferedBlockCipher,
             data: ByteArray
         ): ByteArray {
             // Creamos un array de bytes del tamaño estimado de descifrado
@@ -170,20 +163,16 @@ class AES(var context: Context) {
          * @param iv       Vector de Inicialización (Tamaño en bytes del bloque)
          * @return Datos descifrados
          */
-        private fun decrypt(ciphered: ByteArray, key: ByteArray, iv: ByteArray): ByteArray? {
+        private fun decrypt(ciphered: ByteArray, key: ByteArray): ByteArray? {
             return try {
                 // Creamos el cifrador
-                val aes = PaddedBufferedBlockCipher(
-                    CBCBlockCipher(AESEngine())
-                )
-                // Procesamos la clave y el IV
-                val ivAndKey: CipherParameters = ParametersWithIV(
-                    KeyParameter(
-                        key
-                    ), iv
-                )
-                aes.init(false, ivAndKey)
-                cipherData(aes, ciphered)
+                val aes = AESEngine()
+                val cipher = BufferedBlockCipher(aes)
+
+                // Procesamos la clave
+                val keyParam: CipherParameters = KeyParameter(key)
+                aes.init(false, keyParam)
+                cipherData(cipher, ciphered)
             } catch (e: Exception) {
                 println(
                     "Ha ocurrido un error al intentar descifrar el texto:"
@@ -201,18 +190,16 @@ class AES(var context: Context) {
          * @param iv    Vector de Inicialización (Tamaño en bytes del bloque)
          * @return Datos cifrados
          */
-        private fun encrypt(plain: ByteArray, key: ByteArray, iv: ByteArray): ByteArray? {
+        private fun encrypt(plain: ByteArray, key: ByteArray): ByteArray? {
             return try {
-                val aes = PaddedBufferedBlockCipher(
-                    CBCBlockCipher(AESEngine())
-                )
-                val ivAndKey: CipherParameters = ParametersWithIV(
-                    KeyParameter(
-                        key
-                    ), iv
-                )
-                aes.init(true, ivAndKey)
-                cipherData(aes, plain)
+                // Creamos el cifrador
+                val aes = AESEngine()
+                val cipher = BufferedBlockCipher(aes)
+
+                // Procesamos la clave
+                val keyParam: CipherParameters = KeyParameter(key)
+                aes.init(true, keyParam)
+                cipherData(cipher, plain)
             } catch (e: Exception) {
                 println(
                     "Ha ocurrido un error al intentar cifrar el texto:"

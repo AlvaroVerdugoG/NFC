@@ -11,6 +11,7 @@ import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileReader
 import java.io.IOException
+import java.util.Collections
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 import java.util.Random
@@ -80,7 +81,7 @@ class MyHostApduService : HostApduService() {
         Log.d("Comunicacion", "APDU recibido: $commandStr")
 
         if (enable) {
-            if (commandStr.contains(AI--D)) {
+            if (commandStr.contains(AID)) {
                 Log.d("Comunicacion", "Comando SELECT AID recibido correctamente.")
                 when (messageCounter) {
                     0 -> {
@@ -115,74 +116,123 @@ class MyHostApduService : HostApduService() {
     }
 
     private fun getFirstMessage(apdu: ByteArray): ByteArray {
-        if (apdu.size < 6 ) {
-            return "Apdu is shorter than expected".toByteArray()
+        if (apdu.size < 13+4 ) {
+            return ("Apdu is shorter than expected, lenght was: " + apdu.size).toByteArray()
         }
+
+        Log.i("Security", "First message was recieved")
 
         // Decypher Rr generated at server
         val rr = ByteArray(4)
         for (i in 0..3) {
-            rr[i] = (apdu[i + 2].toInt() xor key!![i].toInt()).toByte() // key XOR key XOR Rr = Rr
+            rr[i] = (apdu[i + 13].toInt() xor key!![i].toInt()).toByte() // key XOR key XOR Rr = Rr
         }
+        val reversedRr = rr.reversed()
+        val rrHex = reversedRr.joinToString(" ") { String.format("%02X", it) }
+        Log.i("Security", "Rr value (hex): $rrHex")
 
         // Encript Rr + Rt
         val encryptedMessage: ByteArray
         encryptedMessage = try {
             val random = Random()
             random.nextBytes(rt)
+
+            val rtHex = rt?.joinToString(" ") { String.format("%02X", it) }
+            Log.i("Security", "Generated Rt value (hex): $rtHex")
+
             val messageBytes = ByteArray(16)
             System.arraycopy(rr, 0, messageBytes, 0, 4)
             System.arraycopy(rt, 0, messageBytes, 4, 4)
+            val messageHex = messageBytes.joinToString(" ") { String.format("%02X", it) }
+            Log.i("Security", "Alpha value before encrypting (hex): $messageHex")
             aes!!.doEncrypt(messageBytes)
         } catch (e: IOException) {
             throw RuntimeException(e)
         }
+        val encryptedMessageHex = encryptedMessage.joinToString(" ") { String.format("%02X", it) }
+        Log.i("Security", "Alpha value after encrypting (hex): $encryptedMessageHex")
+
         // Return encrypted Rr + Rt
         return encryptedMessage
     }
 
     private fun getSecondMessage(apdu: ByteArray): ByteArray {
-        if (apdu.size < 18) {
+        if (apdu.size < 13 + 16) {
             return "Apdu is shorter than expected".toByteArray()
         }
+
+        Log.i("Security", "Beta was recieved")
 
         // Decrypt Rr2 + Rt
         val decryptedMessage: ByteArray?
         decryptedMessage = try {
             val encryptedMessage = ByteArray(16)
-            System.arraycopy(apdu, 2, encryptedMessage, 0, 16)
+            System.arraycopy(apdu, 13, encryptedMessage, 0, 16)
+            val messageHex = encryptedMessage.joinToString(" ") { String.format("%02X", it) }
+            Log.i("Security", "Beta value before decrypting (hex): $messageHex")
             aes!!.doDecrypt(encryptedMessage)
         } catch (e: IOException) {
             throw RuntimeException(e)
         }
+
         if (decryptedMessage == null) {
             return "Error".toByteArray()
         }
 
+        val messageHex = decryptedMessage.joinToString(" ") { String.format("%02X", it) }
+        Log.i("Security", "Beta value after decrypting (hex): $messageHex")
+
+
         // Check if received Rt equals sent Rt (to avoid replay attacks)
         val rt = ByteArray(4)
         System.arraycopy(decryptedMessage, 4, rt, 0, 4)
+
+        val rtHex = rt.joinToString(" ") { String.format("%02X", it) }
+        Log.i("Security", "Rt value received from server (hex): $rtHex")
+
         if (!rt.contentEquals(this.rt)) {
-            return "Error".toByteArray()
+            Log.i("Security", "Received Rt value from server did not match sent Rt value")
+            return "Received Rt value from server did not match sent Rt value".toByteArray()
         }
+
+
 
         // Get Rr2 sent from the server
         val rr2 = ByteArray(4)
         System.arraycopy(decryptedMessage, 0, rr2, 0, 4)
+
+        val rr2Hex = rr2.joinToString(" ") { String.format("%02X", it) }
+        Log.i("Security", "Rr2 value received from server (hex): $rr2Hex")
+
+
         val rt2 = ByteArray(4)
         val random = Random()
         random.nextBytes(rt2)
 
+        val rt2Hex = rt2.joinToString(" ") { String.format("%02X", it) }
+        Log.i("Security", "Generated Rt2 value (hex): $rt2Hex")
+
+
         // Encrypt Rr2 + Rt2 + id
         val messageToEncript = ByteArray(16)
-        return try {
+        val encryptedMessage: ByteArray
+        encryptedMessage = try {
             System.arraycopy(rr2, 0, messageToEncript, 0, 4)
             System.arraycopy(rt2, 0, messageToEncript, 4, 4)
             System.arraycopy(id, 0, messageToEncript, 8, 4)
+
+            val gammaHex = messageToEncript.joinToString(" ") { String.format("%02X", it) }
+            Log.i("Security", "Gamma value before encrypting (hex): $gammaHex")
+
             aes!!.doEncrypt(messageToEncript)
         } catch (e: IOException) {
             throw RuntimeException(e)
+
         }
+        val gammaHex = encryptedMessage.joinToString(" ") { String.format("%02X", it) }
+        Log.i("Security", "Gamma value after encrypting (hex): $gammaHex")
+
+        return encryptedMessage;
     }
 
 }
