@@ -1,8 +1,6 @@
-// ProfileDropdownMenu.kt
-package com.example.nfc.view.components
+package com.example.nfc.util.components
 
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem

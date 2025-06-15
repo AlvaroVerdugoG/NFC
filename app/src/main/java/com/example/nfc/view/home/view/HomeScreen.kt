@@ -39,7 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.nfc.R
 import com.example.nfc.util.components.CardNFC
-import com.example.nfc.view.components.Menu
+import com.example.nfc.util.components.Menu
 import com.example.nfc.view.home.viewModel.HomeViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
