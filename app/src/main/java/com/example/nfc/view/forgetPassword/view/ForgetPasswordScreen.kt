@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -21,7 +20,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -37,114 +35,79 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.nfc.R
-import com.example.nfc.util.components.LoginTextField
+import com.example.nfc.util.components.AlertDialogs
+import com.example.nfc.util.components.TextField
 import com.example.nfc.view.forgetPassword.viewModel.ForgetPasswordViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ForgetPasswordScreen(
-    forgetPasswordViewModel: ForgetPasswordViewModel,
-    onItsDoneClick: () -> Unit,
-    onBackClick: () -> Unit
-) {
+fun ForgetPasswordScreen(forgetPasswordViewModel: ForgetPasswordViewModel,
+                         onItsDoneClick: () -> Unit,
+                         onBackClick: () -> Unit) {
     var email by remember { mutableStateOf("") }
     val context = LocalContext.current
     val uiState by forgetPasswordViewModel.uiState.collectAsState()
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.forgot_password),
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.forget_password)
-                        )
-                    }
-                },
-            )
-        }
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
+    Scaffold(topBar = {
+        CenterAlignedTopAppBar(
+            title = {
+                Text(text = stringResource(R.string.forgot_password),
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center)
+            },
+            navigationIcon = {
+                IconButton(onClick = onBackClick) {
+                    Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = stringResource(R.string.forget_password))
+                }
+            },
+        )
+    }) { paddingValues ->
+        Column(modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues),
             verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            AnimatedVisibility(
-                visible = uiState.errorMessage.isNotEmpty(),
+            horizontalAlignment = Alignment.CenterHorizontally) {
+            AnimatedVisibility(visible = uiState.errorMessage.isNotEmpty(),
                 enter = fadeIn(),
-                exit = fadeOut()
-            ) {
-                Text(
-                    text = uiState.errorMessage,
+                exit = fadeOut()) {
+                Text(text = uiState.errorMessage,
                     style = MaterialTheme.typography.bodyLarge,
-                    color = Color(0xFFD32F2F)
-                )
+                    color = Color(0xFFD32F2F))
             }
             Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = stringResource(R.string.instruction_info),
+            Text(text = stringResource(R.string.instruction_info),
                 style = MaterialTheme.typography.bodyLarge,
-                textAlign = TextAlign.Center
-            )
+                textAlign = TextAlign.Center)
             Spacer(modifier = Modifier.height(16.dp))
-            LoginTextField(
-                value = email,
+            TextField(value = email,
                 onValueChange = {
                     email = it
                 },
                 labelText = stringResource(R.string.email),
                 keyboardType = KeyboardType.Email,
-                modifier = Modifier.fillMaxWidth()
-            )
+                modifier = Modifier.fillMaxWidth())
             Spacer(modifier = Modifier.height(16.dp))
-            Button(
-                onClick = {
-                    forgetPasswordViewModel.resetPassword(context, email)
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
+            Button(onClick = {
+                forgetPasswordViewModel.resetPassword(context, email)
+            }, modifier = Modifier.fillMaxWidth()) {
                 Text(stringResource(R.string.reset_password))
             }
             if (uiState.isSendIt) {
-                AlertDialog(
-                    onDismissRequest = {
+                AlertDialogs(onDismissClick = {
+                    forgetPasswordViewModel.resetItsSendIt()
+                },
+                    title = context.getString(R.string.reset_password),
+                    text = context.getString(R.string.instruction_text),
+                    confirmButtonText = context.getString(R.string.its_done),
+                    confirmButtonClick = {
+                        onItsDoneClick()
                         forgetPasswordViewModel.resetItsSendIt()
                     },
-                    title = { Text(text = stringResource(R.string.reset_password)) },
-                    text = {
-                        Text(
-                            text = stringResource(R.string.instruction_text)
-                        )
-                    },
-                    confirmButton = {
-                        TextButton(
-                            onClick = {
-                                onItsDoneClick()
-                                forgetPasswordViewModel.resetItsSendIt()
-                            }
-                        ) {
-                            Text(text = stringResource(R.string.its_done))
-                        }
-                    },
-                    dismissButton = {
-                        TextButton(
-                            onClick = {
-                                forgetPasswordViewModel.resetPassword(context, email)
-                            }
-                        ) {
-                            Text(text = stringResource(R.string.resend_email))
-                        }
-                    },
-                )
+                    dismissButtonText = context.getString(R.string.resend_email),
+                    dismissButtonClick = {
+                        forgetPasswordViewModel.resetPassword(context, email)
+                    })
+
             }
         }
     }

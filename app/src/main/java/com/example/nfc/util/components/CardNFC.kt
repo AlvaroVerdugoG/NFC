@@ -34,105 +34,80 @@ import coil.compose.AsyncImage
 import com.example.nfc.R
 
 @Composable
-fun CardNFC(
-    isPressed: Boolean,
-    name: String,
-    photo: String,
-    lastName: String
-) {
+fun CardNFC(isPressed: Boolean, name: String, photo: String, lastName: String) {
     if (!isPressed) {
-        Box(
-            modifier = Modifier
-                .size(300.dp, 200.dp)
-                .clip(RoundedCornerShape(16.dp))
-                .shadow(8.dp, RoundedCornerShape(16.dp))
-                .background(Color(0x66FFFFFF))
-                .border(2.dp, Color.Cyan, RoundedCornerShape(16.dp)),
-            contentAlignment = Alignment.TopStart
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp),
+        Box(modifier = Modifier
+            .size(300.dp, 200.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .shadow(8.dp, RoundedCornerShape(16.dp))
+            .background(Color(0x66FFFFFF))
+            .border(2.dp, Color.Cyan, RoundedCornerShape(16.dp)),
+            contentAlignment = Alignment.TopStart) {
+            Column(modifier = Modifier.padding(16.dp),
                 verticalArrangement = Arrangement.Top,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
+                horizontalAlignment = Alignment.CenterHorizontally) {
                 if (photo.isNotEmpty()) {
                     AsyncImage(
                         model = Uri.parse(photo),
                         contentDescription = stringResource(R.string.profile_photo),
                         modifier = Modifier
                             .size(80.dp)
-                            .clip(RoundedCornerShape(8.dp)),
-                        contentScale = ContentScale.FillBounds
-                    )
-                }else {
+                            .clip(RoundedCornerShape(8.dp))
+                            .align(Alignment.Start),
+                        contentScale = ContentScale.FillBounds,
+
+                        )
+                } else {
                     Spacer(modifier = Modifier.height(80.dp))
                 }
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                Text(
-                    text = stringResource(R.string.first_name_card) + " " + name,
+                Text(text = stringResource(R.string.first_name_card) + " " + name,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
                     color = Color.Black,
-                    modifier = Modifier.align(Alignment.Start)
-                )
+                    modifier = Modifier.align(Alignment.Start))
 
                 Spacer(modifier = Modifier.height(4.dp))
 
-                Text(
-                    text = stringResource(R.string.last_name_card) + " " + lastName,
+                Text(text = stringResource(R.string.last_name_card) + " " + lastName,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
                     color = Color.Black,
-                    modifier = Modifier.align(Alignment.Start)
-                )
+                    modifier = Modifier.align(Alignment.Start))
             }
         }
 
     } else {
-        Box(
-            modifier = Modifier
-                .size(300.dp, 200.dp)
-                .clip(RoundedCornerShape(16.dp))
-                .background(Color.LightGray)
-                .border(2.dp, Color.DarkGray, RoundedCornerShape(16.dp)),
-            contentAlignment = Alignment.Center
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp),
+        Box(modifier = Modifier
+            .size(300.dp, 200.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .background(Color.LightGray)
+            .border(2.dp, Color.DarkGray, RoundedCornerShape(16.dp)),
+            contentAlignment = Alignment.Center) {
+            Column(modifier = Modifier.padding(16.dp),
                 verticalArrangement = Arrangement.SpaceBetween,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = stringResource(R.string.card_transport_text),
+                horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(text = stringResource(R.string.card_transport_text),
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp,
-                    color = Color.Black
-                )
+                    color = Color.Black)
                 Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.DirectionsBus,
+                Row(modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center) {
+                    Icon(imageVector = Icons.Default.DirectionsBus,
                         contentDescription = stringResource(R.string.card_transport_icon1),
                         tint = Color.Blue,
-                        modifier = Modifier.size(30.dp)
-                    )
-                    Icon(
-                        imageVector = Icons.Default.Train,
+                        modifier = Modifier.size(30.dp))
+                    Icon(imageVector = Icons.Default.Train,
                         contentDescription = stringResource(R.string.card_transport_icon2),
                         tint = Color.Red,
-                        modifier = Modifier.size(30.dp)
-                    )
-                    Icon(
-                        imageVector = Icons.Default.DirectionsCar,
+                        modifier = Modifier.size(30.dp))
+                    Icon(imageVector = Icons.Default.DirectionsCar,
                         contentDescription = stringResource(R.string.card_transport_icon3),
                         tint = Color.Green,
-                        modifier = Modifier.size(30.dp)
-                    )
+                        modifier = Modifier.size(30.dp))
                 }
             }
         }

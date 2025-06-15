@@ -95,5 +95,11 @@ Por favor, revisa tu correo y sigue el enlace de confirmación.</string>
     <string name="card_transport_icon1"> Bus. </string>
     <string name="card_transport_icon2"> Metro. </string>
     <string name="card_transport_icon3"> Otros servicios. </string>
+    <string name="delete_reasons_error">  Tenemos algunos problemas. \nPor favor intenta eliminar tu cuenta en unos minutos. </string>
+    <string name="permission_denied">  No tienes permisos para acceder a estos datos. </string>
+    <string name="not_found">  No se encontró la información solicitada. </string>
+    <string name="unavailable">  El servicio no está disponible en este momento. </string>
+    <string name="deadline_exceeded">  La consulta tardó demasiado en responder. </string>
+    <string name="aborted">  Se canceló la operación. </string>
 </resources>
 

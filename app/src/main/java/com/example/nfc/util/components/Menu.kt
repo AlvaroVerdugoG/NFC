@@ -22,25 +22,15 @@ fun Menu(
     onAboutClick: () -> Unit,
     onDeleteAccountClick: () -> Unit,
 ) {
-    DropdownMenu(
-        expanded = expanded,
+    DropdownMenu(expanded = expanded,
         modifier = Modifier
             .fillMaxWidth(0.5f)
             .fillMaxHeight(),
         onDismissRequest = onDismissRequest,
-        offset = DpOffset(x = (-0).dp, y = 0.dp)
-    ) {
-        DropdownMenuItem(
-            text = { Text(stringResource(R.string.faq)) },
-            onClick = onFAQClick
-        )
-        DropdownMenuItem(
-            text = { Text(stringResource(R.string.about)) },
-            onClick = onAboutClick
-        )
-        DropdownMenuItem(
-            text = { Text(stringResource(R.string.delete_account)) },
-            onClick = onDeleteAccountClick
-        )
+        offset = DpOffset(x = (-0).dp, y = 0.dp)) {
+        DropdownMenuItem(text = { Text(stringResource(R.string.faq)) }, onClick = onFAQClick)
+        DropdownMenuItem(text = { Text(stringResource(R.string.about)) }, onClick = onAboutClick)
+        DropdownMenuItem(text = { Text(stringResource(R.string.delete_account)) },
+            onClick = onDeleteAccountClick)
     }
 }

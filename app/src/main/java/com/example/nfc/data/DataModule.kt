@@ -24,10 +24,12 @@ object DataModule {
     @Provides
     fun providePhotoManger(@ApplicationContext context: Context): PhotoManagerService =
         PhotoManager(context)
+
     @Singleton
     @Provides
     fun provideFireBaseAuth(@ApplicationContext context: Context): FireBaseAuthService =
         FireBaseAuth(context)
+
     @Singleton
     @Provides
     fun provideFireBaseStorage(@ApplicationContext context: Context): FireBaseStorageService =
@@ -35,5 +37,6 @@ object DataModule {
 
     @Provides
     @Singleton
-    fun provideSharedPreferences(@ApplicationContext context: Context) = context.getSharedPreferences("sharedPreferences", Context.MODE_PRIVATE)!!
+    fun provideSharedPreferences(@ApplicationContext context: Context) =
+        context.getSharedPreferences("sharedPreferences", Context.MODE_PRIVATE)!!
 }

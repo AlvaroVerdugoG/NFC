@@ -17,80 +17,63 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class ForgetPasswordViewModel @Inject constructor(
-    private val fireBaseStorage: FireBaseStorage,
-    private val fireBaseAuth: FireBaseAuth
-) : ViewModel() {
-    data class ForgetPasswordUIState(
-        var isLoading: Boolean = true,
-        var errorMessage: String = "",
-        var isSendIt: Boolean = false
-    )
+class ForgetPasswordViewModel @Inject constructor(private val fireBaseStorage: FireBaseStorage,
+                                                  private val fireBaseAuth: FireBaseAuth) :
+    ViewModel() {
+    data class ForgetPasswordUIState(var isLoading: Boolean = true,
+                                     var errorMessage: String = "",
+                                     var isSendIt: Boolean = false)
 
     private val _uiState = MutableStateFlow(ForgetPasswordUIState())
     val uiState: StateFlow<ForgetPasswordUIState> = _uiState
 
-    fun resetPassword(context: Context, email: String){
+    fun resetPassword(context: Context, email: String) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                fireBaseStorage.checkEmailRegistered(email).fold(
-                error = {
+                fireBaseStorage.checkEmailRegistered(email).fold(error = {
                     val errorMsg = when (it) {
                         is NFCError.FireBaseError -> it.message
-                        NFCError.Default ->context.getString(R.string.unexpected_error)
+                        NFCError.Default -> context.getString(R.string.unexpected_error)
                     }
                     _uiState.update { currentState ->
-                        currentState.copy(
-                            errorMessage = errorMsg
-                        )
+                        currentState.copy(errorMessage = errorMsg)
                     }
-                },
-                success = {
-                    if(it){
+                }, success = {
+                    if (it) {
                         sendEmail(context, email)
-                    } else{
+                    } else {
                         _uiState.update { currentState ->
-                            currentState.copy(
-                                errorMessage = context.getString(R.string.has_not_registered)
-                            )
+                            currentState.copy(errorMessage = context.getString(R.string.has_not_registered))
                         }
                     }
-                }
-                )
+                })
             }
         }
     }
-    private fun sendEmail(context: Context,email: String){
+
+    private fun sendEmail(context: Context, email: String) {
         viewModelScope.launch {
-            withContext(Dispatchers.IO){
-                fireBaseAuth.forgetPassword(email).fold(
-                    error = {
-                        val errorMsg = when (it) {
-                            is NFCError.FireBaseError -> it.message
-                            NFCError.Default -> context.getString(R.string.unexpected_error)
-                        }
-                        _uiState.update { currentState ->
-                            currentState.copy(
-                                errorMessage = errorMsg
-                            )
-                        }
-                    },
-                    success = {
-                        _uiState.update { currentState ->
-                            currentState.copy(
-                                isSendIt = true
-                            )
-                        }
+            withContext(Dispatchers.IO) {
+                fireBaseAuth.forgetPassword(email).fold(error = {
+                    val errorMsg = when (it) {
+                        is NFCError.FireBaseError -> it.message
+                        NFCError.Default -> context.getString(R.string.unexpected_error)
                     }
-                )
+                    _uiState.update { currentState ->
+                        currentState.copy(errorMessage = errorMsg)
+                    }
+                }, success = {
+                    _uiState.update { currentState ->
+                        currentState.copy(isSendIt = true)
+                    }
+                })
             }
         }
     }
-    fun resetItsSendIt(){
+
+    fun resetItsSendIt() {
         _uiState.update { currentState ->
-            currentState.copy(
-                isSendIt = false
-            )
+            currentState.copy(isSendIt = false)
         }
     }
 }

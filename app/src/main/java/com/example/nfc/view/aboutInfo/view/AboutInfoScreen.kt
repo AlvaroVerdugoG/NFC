@@ -30,44 +30,32 @@ import javax.inject.Inject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AboutInfoScreen(
-    aboutInfoViewModel: AboutInfoViewModel,
-    onBackClick: () -> Unit
-) {
-    val context =
-        LocalContext.current
+fun AboutInfoScreen(aboutInfoViewModel: AboutInfoViewModel, onBackClick: () -> Unit) {
+    val context = LocalContext.current
     val uiState by aboutInfoViewModel.uiState.collectAsState()
 
     aboutInfoViewModel.getAboutInfo(context)
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.about),
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.forget_password)
-                        )
-                    }
-                },
-            )
-        }
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
+    Scaffold(topBar = {
+        CenterAlignedTopAppBar(
+            title = {
+                Text(text = stringResource(R.string.about),
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center)
+            },
+            navigationIcon = {
+                IconButton(onClick = onBackClick) {
+                    Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = stringResource(R.string.forget_password))
+                }
+            },
+        )
+    }) { paddingValues ->
+        Column(modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues),
             verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+            horizontalAlignment = Alignment.CenterHorizontally) {
             Text(stringResource(R.string.name_of_the_app) + " " + uiState.aboutInfo?.appName)
             Spacer(modifier = Modifier.height(8.dp))
             Text(stringResource(R.string.version) + " " + uiState.aboutInfo?.version)

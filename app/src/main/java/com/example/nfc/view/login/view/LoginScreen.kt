@@ -40,17 +40,14 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.nfc.R
 import com.example.nfc.model.User
-import com.example.nfc.util.components.LoginTextField
+import com.example.nfc.util.components.TextField
 import com.example.nfc.view.login.viewModel.LoginViewModel
 
-
 @Composable
-fun LoginScreen(
-    loginViewModel: LoginViewModel,
-    onLoginClick: () -> Unit,
-    registerClick: () -> Unit,
-    onForgetPasswordClick: () -> Unit
-) {
+fun LoginScreen(loginViewModel: LoginViewModel,
+                onLoginClick: () -> Unit,
+                registerClick: () -> Unit,
+                onForgetPasswordClick: () -> Unit) {
     val context = LocalContext.current
     val uiState by loginViewModel.uiState.collectAsState()
 
@@ -68,104 +65,77 @@ fun LoginScreen(
             loginViewModel.resetLoginStatus()
         }
     }
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFFF5F5F5))
-            .padding(all = defaultPadding),
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .background(Color(0xFFF5F5F5))
+        .padding(all = defaultPadding),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
 
     ) {
-        Text(
-            text = stringResource(R.string.welcome_text),
+        Text(text = stringResource(R.string.welcome_text),
             style = MaterialTheme.typography.titleLarge,
-            color = Color(0xFF004D40)
-        )
+            color = Color(0xFF004D40))
 
         Spacer(modifier = Modifier.height(38.dp))
 
-        AnimatedVisibility(
-            visible = uiState.errorMessage.isNotEmpty(),
+        AnimatedVisibility(visible = uiState.errorMessage.isNotEmpty(),
             enter = fadeIn(),
-            exit = fadeOut()
-        ) {
-            Text(
-                text = uiState.errorMessage,
+            exit = fadeOut()) {
+            Text(text = uiState.errorMessage,
                 style = MaterialTheme.typography.bodyLarge,
-                color = Color(0xFFD32F2F)
-            )
+                color = Color(0xFFD32F2F))
         }
         Spacer(Modifier.height(itemSpacing))
-        LoginTextField(
-            value = user.email,
+        TextField(value = user.email,
             onValueChange = { user = user.copy(email = it) },
             labelText = stringResource(R.string.email),
             leadingIcon = Icons.Default.Person,
-            modifier = Modifier.fillMaxWidth()
-        )
+            modifier = Modifier.fillMaxWidth())
         Spacer(Modifier.height(itemSpacing))
-        LoginTextField(
-            value = user.password,
+        TextField(value = user.password,
             onValueChange = { user = user.copy(password = it) },
             labelText = stringResource(R.string.password),
             leadingIcon = Icons.Default.Lock,
             modifier = Modifier.fillMaxWidth(),
             keyboardType = KeyboardType.Password,
-            isPassword = true
-        )
+            isPassword = true)
         Spacer(Modifier.height(itemSpacing))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Row(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
 
                 ) {
-                Checkbox(
-                    checked = checked,
-                    onCheckedChange = {
-                        checked = it
-                        loginViewModel.setUserEmailPreferences(user.email, checked)
-                    }
-                )
-                Text(
-                    text = stringResource(R.string.remember_me)
-                )
+                Checkbox(checked = checked, onCheckedChange = {
+                    checked = it
+                    loginViewModel.setUserEmailPreferences(user.email, checked)
+                })
+                Text(text = stringResource(R.string.remember_me))
             }
             TextButton(onClick = onForgetPasswordClick) {
                 Text(stringResource(R.string.forgot_password))
             }
         }
         Spacer(Modifier.height(itemSpacing))
-        Button(
-            onClick = {
-                loginViewModel.signIn(context, user)
+        Button(onClick = {
+            loginViewModel.signIn(context, user)
 
-            },
+        },
             modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF0077CC)
-            )
-        ) {
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0077CC))) {
             Text(stringResource(R.string.sign_in))
             if (uiState.isSigIn) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(24.dp),
+                CircularProgressIndicator(modifier = Modifier.size(24.dp),
                     strokeWidth = 2.dp,
-                    color = Color.White
-                )
+                    color = Color.White)
             }
 
         }
         Spacer(Modifier.height(24.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
+        Row(modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+            verticalAlignment = Alignment.CenterVertically) {
             Text(stringResource(R.string.account_question))
             TextButton(onClick = registerClick) {
                 Text(stringResource(R.string.register))
@@ -173,16 +143,3 @@ fun LoginScreen(
         }
     }
 }
-
-//@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-//@Preview(showSystemUi = true)
-//@Composable
-//fun LoginScreenPreview() {
-//    NFCTheme {
-//        Scaffold {
-//            LoginScreen(
-//                onLoginClick = { }
-//            ){}
-//        }
-//    }
-//}

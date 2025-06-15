@@ -1,7 +1,5 @@
 package com.example.nfc.data.services
 
-import android.content.ComponentName
-import android.content.pm.PackageManager
 import android.nfc.cardemulation.HostApduService
 import android.os.Bundle
 import android.util.Log
@@ -10,16 +8,8 @@ class MyHostApduService : HostApduService() {
 
     companion object {
 
-        private const val SELECT_APDU_HEADER = "00A40400"
         private const val AID = "F0010203040506"
         var enable: Boolean = false
-
-        fun buildSelectApdu(aid: String): String {
-            // Convierte el string AID a un array de bytes
-            val aidLength = aid.length / 2
-            val lengthHex = String.format("%02X", aidLength)
-            return SELECT_APDU_HEADER + lengthHex + aid
-        }
 
         fun bytesToHex(bytes: ByteArray): String {
             val hexArray = "0123456789ABCDEF".toCharArray()
@@ -63,6 +53,5 @@ class MyHostApduService : HostApduService() {
     override fun onDeactivated(reason: Int) {
         enable = false
     }
-
 
 }

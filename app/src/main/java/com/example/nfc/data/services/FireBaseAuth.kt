@@ -40,9 +40,7 @@ class FireBaseAuth @Inject constructor(@ApplicationContext private val context: 
                     Either.Right(Success)
                 } else {
                     firebaseAuth.signOut()
-                    Either.Left(
-                        NFCError.FireBaseError(context.getString(R.string.error_email_not_verified))
-                    )
+                    Either.Left(NFCError.FireBaseError(context.getString(R.string.error_email_not_verified)))
                 }
             } else {
                 Either.Left(NFCError.Default)
@@ -124,22 +122,19 @@ class FireBaseAuth @Inject constructor(@ApplicationContext private val context: 
 
     private fun handleError(errorMessage: String): String {
         return when {
-            errorMessage.contains("String is empty", ignoreCase = true) ->
-                context.getString(R.string.error_string_empty)
-            errorMessage.contains("wrong password", ignoreCase = true) ->
-                context.getString(R.string.error_password_wrong)
-            errorMessage.contains("Invalid credential", ignoreCase = true) ->
-                context.getString(R.string.error_invalid_credential)
-            errorMessage.contains("auth/user-disabled", ignoreCase = true) ->
-                context.getString(R.string.error_user_disabled)
-            errorMessage.contains("usernot found", ignoreCase = true) ->
-                context.getString(R.string.error_user_not_found)
-            errorMessage.contains("too many requests", ignoreCase = true) ->
-                context.getString(R.string.error_too_many_tries)
-            errorMessage.contains("network error", ignoreCase = true) ->
-                context.getString(R.string.error_conection)
-            else ->
-                context.getString(R.string.unexpected_error)
+            errorMessage.contains("String is empty",
+                ignoreCase = true) -> context.getString(R.string.error_string_empty)
+            errorMessage.contains("auth credential is incorrect",
+                ignoreCase = true) -> context.getString(R.string.error_invalid_credential)
+            errorMessage.contains("auth/user-disabled",
+                ignoreCase = true) -> context.getString(R.string.error_user_disabled)
+            errorMessage.contains("user not found",
+                ignoreCase = true) -> context.getString(R.string.error_user_not_found)
+            errorMessage.contains("too many requests",
+                ignoreCase = true) -> context.getString(R.string.error_too_many_tries)
+            errorMessage.contains("network error",
+                ignoreCase = true) -> context.getString(R.string.error_conection)
+            else -> context.getString(R.string.unexpected_error)
         }
     }
 

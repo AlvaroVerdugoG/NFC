@@ -2,7 +2,6 @@ package com.example.nfc.util.components
 
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.RemoveRedEye
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Icon
@@ -22,7 +21,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 
 
 @Composable
-fun LoginTextField(
+fun TextField(
     modifier: Modifier = Modifier,
     value: String,
     onValueChange: (String) -> Unit,
@@ -54,16 +53,3 @@ fun LoginTextField(
         enabled = enabled
     )
 }
-/*
-@Preview(showBackground = true)
-@Composable
-fun LoginTextPreview(){
-    LoginTextField(
-        value= "",
-        onValueChange = {},
-        labelText = "Password",
-    )
-}
-*/
-
-

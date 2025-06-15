@@ -5,14 +5,10 @@ import com.example.nfc.view.deleteAccount.view.DeleteAccountScreen
 import com.example.nfc.view.deleteAccount.viewModel.DeleteAccountViewModel
 
 @Composable
-fun RouteDeleteAccount(
-    deleteAccountViewModel: DeleteAccountViewModel,
-    onDeleteClick: () -> Unit,
-    onBackClick: () -> Unit
-){
-    DeleteAccountScreen(
-        deleteAccountViewModel = deleteAccountViewModel,
+fun RouteDeleteAccount(deleteAccountViewModel: DeleteAccountViewModel,
+                       onDeleteClick: () -> Unit,
+                       onBackClick: () -> Unit) {
+    DeleteAccountScreen(deleteAccountViewModel = deleteAccountViewModel,
         onDeleteClick = onDeleteClick,
-        onBackClick = onBackClick
-    )
+        onBackClick = onBackClick)
 }

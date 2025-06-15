@@ -34,31 +34,22 @@ fun FAQItem(faq: FAQ) {
         .padding(8.dp)
         .clickable {
             expanded = !expanded
-        }
-    ) {
+        }) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
+            Row(modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+                verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = faq.question,
                 )
-                IconButton(
-                    onClick = { expanded = !expanded }
-                ) {
-                    Icon(
-                        imageVector = if (expanded) Icons.Default.RemoveCircle else Icons.Default.AddCircle,
-                        contentDescription = null
-                    )
+                IconButton(onClick = { expanded = !expanded }) {
+                    Icon(imageVector = if (expanded) Icons.Default.RemoveCircle else Icons.Default.AddCircle,
+                        contentDescription = null)
                 }
             }
             if (expanded) {
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = faq.answer
-                )
+                Text(text = faq.answer)
             }
         }
     }

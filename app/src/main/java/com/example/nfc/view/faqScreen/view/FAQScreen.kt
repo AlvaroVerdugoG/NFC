@@ -23,46 +23,33 @@ import com.example.nfc.R
 import com.example.nfc.util.components.FAQItem
 import com.example.nfc.view.faqScreen.viewModel.FAQViewModel
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FAQScreen(
-    faqViewModel: FAQViewModel,
-    onBackClick: () -> Unit
-) {
-    val context =
-        LocalContext.current
+fun FAQScreen(faqViewModel: FAQViewModel, onBackClick: () -> Unit) {
+    val context = LocalContext.current
     val uiState by faqViewModel.uiState.collectAsState()
 
     faqViewModel.getFAQ(context)
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.faq),
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.forget_password)
-                        )
-                    }
-                },
-            )
-        }
-    ) { paddingValues ->
-        LazyColumn(
-            modifier = Modifier
+    Scaffold(topBar = {
+        CenterAlignedTopAppBar(
+            title = {
+                Text(text = stringResource(R.string.faq),
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center)
+            },
+            navigationIcon = {
+                IconButton(onClick = onBackClick) {
+                    Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = stringResource(R.string.forget_password))
+                }
+            },
+        )
+    }) { paddingValues ->
+        LazyColumn(modifier = Modifier
             .fillMaxWidth()
-            .padding(paddingValues)
-        ) {
-            items(uiState.faqs){ faq ->
+            .padding(paddingValues)) {
+            items(uiState.faqs) { faq ->
                 FAQItem(faq)
             }
         }

@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -35,8 +34,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.nfc.R
 import com.example.nfc.model.User
-import com.example.nfc.util.components.LoginTextField
-import com.example.nfc.view.register.RegisterViewModel.RegisterViewModel
+import com.example.nfc.util.components.AlertDialogs
+import com.example.nfc.util.components.TextField
+import com.example.nfc.view.register.viewModel.RegisterViewModel
 
 @Composable
 fun RegisterScreen(
@@ -62,106 +62,83 @@ fun RegisterScreen(
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(defaultPadding),
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .padding(defaultPadding),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        AnimatedVisibility(
-            visible = uiState.errorMessage.isNotEmpty(),
+        verticalArrangement = Arrangement.Center) {
+        AnimatedVisibility(visible = uiState.errorMessage.isNotEmpty(),
             enter = fadeIn(),
-            exit = fadeOut()
-        ) {
-            Text(
-                text = uiState.errorMessage,
+            exit = fadeOut()) {
+            Text(text = uiState.errorMessage,
                 style = MaterialTheme.typography.bodyLarge,
-                color = Color.Red
-            )
+                color = Color.Red)
         }
 
         Spacer(Modifier.height(itemSpacing))
 
-        LoginTextField(
-            value = user.name,
+        TextField(value = user.name,
             onValueChange = { user = user.copy(name = it) },
             labelText = stringResource(R.string.first_name),
-            modifier = Modifier.fillMaxWidth()
-        )
+            modifier = Modifier.fillMaxWidth())
 
         Spacer(Modifier.height(itemSpacing))
 
-        LoginTextField(
-            value = user.lastName,
+        TextField(value = user.lastName,
             onValueChange = { user = user.copy(lastName = it) },
             labelText = stringResource(R.string.last_name),
-            modifier = Modifier.fillMaxWidth()
-        )
+            modifier = Modifier.fillMaxWidth())
 
         Spacer(Modifier.height(itemSpacing))
 
-        LoginTextField(
-            value = user.email,
+        TextField(value = user.email,
             onValueChange = { user = user.copy(email = it) },
             labelText = stringResource(R.string.email),
-            modifier = Modifier.fillMaxWidth()
-        )
+            modifier = Modifier.fillMaxWidth())
 
         Spacer(Modifier.height(itemSpacing))
 
-        LoginTextField(
-            value = user.password,
+        TextField(value = user.password,
             onValueChange = {
                 user = user.copy(password = it)
-                passwordError = registerViewModel.checkPassword(context, user.password, user.confirmPassword)
+                passwordError =
+                    registerViewModel.checkPassword(context, user.password, user.confirmPassword)
             },
             labelText = stringResource(R.string.password),
             modifier = Modifier.fillMaxWidth(),
             keyboardType = KeyboardType.Password,
-            isPassword = true
-        )
+            isPassword = true)
 
         Spacer(Modifier.height(itemSpacing))
 
-        LoginTextField(
-            value = user.confirmPassword,
+        TextField(value = user.confirmPassword,
             onValueChange = {
                 user = user.copy(confirmPassword = it)
-                passwordError = registerViewModel.checkPassword(context, user.password, user.confirmPassword)
+                passwordError =
+                    registerViewModel.checkPassword(context, user.password, user.confirmPassword)
             },
             labelText = stringResource(R.string.confirm_password),
             modifier = Modifier.fillMaxWidth(),
             keyboardType = KeyboardType.Password,
-            isPassword = true
-        )
+            isPassword = true)
 
-        AnimatedVisibility(
-            visible = passwordError.isNotEmpty(),
+        AnimatedVisibility(visible = passwordError.isNotEmpty(),
             enter = fadeIn(),
-            exit = fadeOut()
-        ) {
-            Text(
-                text = passwordError,
+            exit = fadeOut()) {
+            Text(text = passwordError,
                 style = MaterialTheme.typography.bodySmall,
-                color = Color.Red
-            )
+                color = Color.Red)
         }
 
         Spacer(Modifier.height(itemSpacing))
 
-        Button(
-            onClick = {
-                registerViewModel.register(context, user)
-            },
+        Button(onClick = {
+            registerViewModel.register(context, user)
+        },
             enabled = passwordError.isEmpty() && user.isCorrect(),
-            modifier = Modifier.fillMaxWidth()
-        ) {
+            modifier = Modifier.fillMaxWidth()) {
             if (uiState.isLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(24.dp),
-                    strokeWidth = 2.dp
-                )
+                CircularProgressIndicator(modifier = Modifier.size(24.dp), strokeWidth = 2.dp)
             } else {
                 Text(stringResource(R.string.register))
             }
@@ -169,11 +146,9 @@ fun RegisterScreen(
 
         Spacer(Modifier.height(24.dp))
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
+        Row(modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+            verticalAlignment = Alignment.CenterVertically) {
 
             Text(stringResource(R.string.have_an_account))
             TextButton(onClick = onSignInClick) {
@@ -181,46 +156,21 @@ fun RegisterScreen(
             }
         }
         if (uiState.confirmEmail) {
-            AlertDialog(
-                onDismissRequest = { registerViewModel.resetConfirmEmail()
-                                   registerViewModel.resetRegisterStatus()
-                                   },
-                title = { Text(text = stringResource(R.string.confirm_email_title)) },
-                text = {
-                    Text(
-                        text = stringResource(R.string.confirm_email_text)
-                    )
-                },
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            registerViewModel.signIn(context,user)
+            AlertDialogs(onDismissClick = {
+                registerViewModel.resetConfirmEmail()
+                registerViewModel.resetRegisterStatus()
+            },
+                title = context.getString(R.string.confirm_email_title),
+                text = context.getString(R.string.confirm_email_text),
+                confirmButtonClick = {
+                    registerViewModel.signIn(context, user)
 
-                        }
-                    ) {
-                        Text(text = stringResource(R.string.its_done))
-                    }
                 },
-                dismissButton = {
-                    TextButton(
-                        onClick = {
-                            registerViewModel.resendVerificationEmail(context)
-                        }
-                    ) {
-                        Text(text = stringResource(R.string.resend_email))
-                    }
+                confirmButtonText = context.getString(R.string.its_done),
+                dismissButtonClick = {
+                    registerViewModel.resendVerificationEmail(context)
                 },
-            )
+                dismissButtonText = context.getString(R.string.resend_email))
         }
     }
 }
-
-/*
-@Preview(showSystemUi = true)
-@Composable
-fun SignUpPreview(){
-    NFCTheme {
-        SignUpScreen(onSignInClick = {},
-            onSignUpClick = {})
-    }
-}*/

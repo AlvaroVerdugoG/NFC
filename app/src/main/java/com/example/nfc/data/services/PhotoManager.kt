@@ -18,21 +18,18 @@ class PhotoManager @Inject constructor(@ApplicationContext private val context: 
     override fun createImageUri(): Uri {
         val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
         val imageFile = File(context.cacheDir, "Image${timeStamp}.jpg").apply { createNewFile() }
-        photoUri = FileProvider.getUriForFile(
-            context,
-            "${context.packageName}.fileprovider",
-            imageFile
-        )
+        photoUri =
+            FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", imageFile)
         return photoUri!!
     }
 
     override fun launchCamera(photoLauncher: ManagedActivityResultLauncher<Uri, Boolean>) {
-        photoUri?.let { photoLauncher.launch(it) }
+        photoUri = createImageUri()
+        photoLauncher.launch(photoUri)
     }
 
     override fun launchGallery(galleryLauncher: ManagedActivityResultLauncher<String, Uri?>) {
         galleryLauncher.launch("image/*")
     }
-
 
 }

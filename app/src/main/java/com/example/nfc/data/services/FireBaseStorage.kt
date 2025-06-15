@@ -1,8 +1,6 @@
 package com.example.nfc.data.services
 
-
 import android.content.Context
-import android.util.Log
 import com.example.nfc.R
 import com.example.nfc.model.Either
 import com.example.nfc.model.User
@@ -28,22 +26,20 @@ class FireBaseStorage @Inject constructor(@ApplicationContext private val contex
 
         } catch (e: Exception) {
             val error = handleError(e)
-            Either.Left(NFCError.FireBaseError(error))        }
+            Either.Left(NFCError.FireBaseError(error))
+        }
     }
 
-    override suspend fun updateProfilePhoto(
-        email: String,
-        newPhotoUrl: String
-    ): Either<NFCError, Success> {
+    override suspend fun updateProfilePhoto(email: String,
+                                            newPhotoUrl: String): Either<NFCError, Success> {
         return try {
-            firestore.document("users/${email}")
-                .update("profilePhotoUrl", newPhotoUrl)
-                .await()
+            firestore.document("users/${email}").update("profilePhotoUrl", newPhotoUrl).await()
 
             Either.Right(Success)
         } catch (e: Exception) {
             val error = handleError(e)
-            Either.Left(NFCError.FireBaseError(error))        }
+            Either.Left(NFCError.FireBaseError(error))
+        }
     }
 
     override suspend fun fetchUserData(email: String): Either<NFCError, User> {
@@ -51,9 +47,10 @@ class FireBaseStorage @Inject constructor(@ApplicationContext private val contex
             val snapshot = firestore.document("users/${email}").get().await()
             val user = snapshot.toObject(User::class.java)
             Either.Right(user!!)
-        }catch (e: Exception) {
+        } catch (e: Exception) {
             val error = handleError(e)
-            Either.Left(NFCError.FireBaseError(error))        }
+            Either.Left(NFCError.FireBaseError(error))
+        }
     }
 
     override suspend fun checkEmailRegistered(email: String): Either<NFCError, Boolean> {
@@ -62,7 +59,8 @@ class FireBaseStorage @Inject constructor(@ApplicationContext private val contex
             Either.Right(snapshot.documents.isNotEmpty())
         } catch (e: Exception) {
             val error = handleError(e)
-            Either.Left(NFCError.FireBaseError(error))        }
+            Either.Left(NFCError.FireBaseError(error))
+        }
     }
 
     override suspend fun deleteDataFromEmail(email: String): Either<NFCError, Success> {
@@ -71,14 +69,13 @@ class FireBaseStorage @Inject constructor(@ApplicationContext private val contex
             Either.Right(Success)
         } catch (e: Exception) {
             val error = handleError(e)
-            Either.Left(NFCError.FireBaseError(error))        }
+            Either.Left(NFCError.FireBaseError(error))
+        }
     }
 
     override suspend fun saveDeleteReason(reasons: List<String>): Either<NFCError, Success> {
         return try {
-            val data = hashMapOf(
-                "reasons" to reasons
-            )
+            val data = hashMapOf("reasons" to reasons)
             firestore.collection("delete_reasons").add(data).await()
             Either.Right(Success)
         } catch (e: Exception) {
@@ -90,11 +87,11 @@ class FireBaseStorage @Inject constructor(@ApplicationContext private val contex
     private fun handleError(exception: Exception): String {
         return if (exception is FirebaseFirestoreException) {
             when (exception.code) {
-                FirebaseFirestoreException.Code.PERMISSION_DENIED -> "No tienes permisos para acceder a estos datos."
-                FirebaseFirestoreException.Code.NOT_FOUND -> "No se encontró la información solicitada."
-                FirebaseFirestoreException.Code.UNAVAILABLE -> "El servicio no está disponible en este momento."
-                FirebaseFirestoreException.Code.DEADLINE_EXCEEDED -> "La consulta tardó demasiado en responder."
-                FirebaseFirestoreException.Code.ABORTED -> "Se canceló la operación."
+                FirebaseFirestoreException.Code.PERMISSION_DENIED -> context.getString(R.string.permission_denied)
+                FirebaseFirestoreException.Code.NOT_FOUND -> context.getString(R.string.not_found)
+                FirebaseFirestoreException.Code.UNAVAILABLE -> context.getString(R.string.unavailable)
+                FirebaseFirestoreException.Code.DEADLINE_EXCEEDED -> context.getString(R.string.deadline_exceeded)
+                FirebaseFirestoreException.Code.ABORTED -> context.getString(R.string.aborted)
                 else -> context.getString(R.string.unexpected_error)
             }
         } else {

@@ -1,14 +1,11 @@
-package com.example.nfc.view.profile.viewModel
+package com.example.nfc.view.register.viewModel
 
 import android.content.Context
-import android.net.Uri
-import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.nfc.R
 import com.example.nfc.data.services.FireBaseAuth
 import com.example.nfc.data.services.FireBaseStorage
-import com.example.nfc.data.services.PhotoManager
 import com.example.nfc.model.User
 import com.example.nfc.model.error.NFCError
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,46 +18,25 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class ProfileViewModel @Inject constructor(private val fireBaseAuth: FireBaseAuth,
-                                           private val photoManager: PhotoManager,
-                                           private val fireBaseStorage: FireBaseStorage) : ViewModel() {
-    data class ProfileUIState(var isLoading: Boolean = false,
-                              var errorMessage: String = "",
-                              var isSignOut: Boolean = false,
-                              var isUpdatedPassword: Boolean = false,
-                              var user: User? = null)
+class RegisterViewModel @Inject constructor(private val fireBaseAuth: FireBaseAuth,
+                                            private val fireBaseStorage: FireBaseStorage) :
+    ViewModel() {
+    data class RegisterUIState(var isLoading: Boolean = false,
+                               var errorMessage: String = "",
+                               var isSigIn: Boolean = false,
+                               var confirmEmail: Boolean = false)
 
-    private val _uiState = MutableStateFlow((ProfileUIState()))
-    val uiState: StateFlow<ProfileUIState> = _uiState
+    private val _uiState = MutableStateFlow(RegisterUIState())
+    val uiState: StateFlow<RegisterUIState> = _uiState
 
-    fun fetchUserData(context: Context) {
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                fireBaseStorage.fetchUserData(fireBaseAuth.getEmail()).fold(error = {
-                    val errorMsg = when (it) {
-                        is NFCError.FireBaseError -> it.message
-                        NFCError.Default -> context.getString(R.string.unexpected_error)
-                    }
-                    _uiState.update { currentState ->
-                        currentState.copy(errorMessage = errorMsg)
-                    }
-                }, success = {
-                    _uiState.update { currentState ->
-                        currentState.copy(user = it)
-                    }
-                })
-            }
-        }
-    }
-
-    fun signOut(context: Context) {
+    fun register(context: Context, user: User) {
 
         _uiState.update { currentState ->
             currentState.copy(isLoading = true)
         }
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                fireBaseAuth.signOut().fold(error = {
+                fireBaseAuth.register(user.email, user.password).fold(error = {
                     val errorMsg = when (it) {
                         is NFCError.FireBaseError -> it.message
                         NFCError.Default -> context.getString(R.string.unexpected_error)
@@ -70,17 +46,57 @@ class ProfileViewModel @Inject constructor(private val fireBaseAuth: FireBaseAut
                     }
                 }, success = {
                     _uiState.update { currentState ->
-                        currentState.copy(isLoading = false, isSignOut = true)
+                        currentState.copy(isLoading = false, confirmEmail = true)
+                    }
+                })
+
+            }
+
+        }
+    }
+
+    fun signIn(context: Context, user: User) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                fireBaseAuth.signIn(user.email, user.password).fold(error = {
+                    val errorMsg = when (it) {
+                        is NFCError.FireBaseError -> it.message
+                        NFCError.Default -> context.getString(R.string.unexpected_error)
+                    }
+                    _uiState.update { currentState ->
+                        currentState.copy(errorMessage = errorMsg)
+                    }
+                }, success = {
+                    saveUserData(context, user = user)
+                    _uiState.update { currentState ->
+                        currentState.copy(isLoading = false, isSigIn = true)
                     }
                 })
             }
         }
     }
 
-    fun updatePassword(context: Context, password: String) {
+    private fun saveUserData(context: Context, user: User) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                fireBaseAuth.changePassword(password).fold(error = {
+                fireBaseStorage.saveUserData(user = user).fold(error = {
+                    val errorMsg = when (it) {
+                        is NFCError.FireBaseError -> it.message
+                        NFCError.Default -> context.getString(R.string.unexpected_error)
+                    }
+                    _uiState.update { currentState ->
+                        currentState.copy(errorMessage = errorMsg)
+                    }
+                }, success = {})
+            }
+        }
+
+    }
+
+    fun resendVerificationEmail(context: Context) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                fireBaseAuth.reSendVerificationEmail().fold(error = {
                     val errorMsg = when (it) {
                         is NFCError.FireBaseError -> it.message
                         NFCError.Default -> context.getString(R.string.unexpected_error)
@@ -92,7 +108,6 @@ class ProfileViewModel @Inject constructor(private val fireBaseAuth: FireBaseAut
                     _uiState.update { currentState ->
                         currentState.copy(
                             isLoading = false,
-                            isUpdatedPassword = true,
                         )
                     }
                 })
@@ -100,38 +115,29 @@ class ProfileViewModel @Inject constructor(private val fireBaseAuth: FireBaseAut
         }
     }
 
-    fun setProfilePhotoUri(uri: Uri) {
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                fireBaseStorage.updateProfilePhoto(fireBaseAuth.getEmail(), uri.toString())
-            }
+    fun checkPassword(context: Context, password: String, confirmPassword: String): String {
+        return if (password.isEmpty()) {
+            context.getString(R.string.password_required)
+        } else if (confirmPassword.isEmpty()) {
+            context.getString(R.string.validate_password)
+        } else if (confirmPassword != password) {
+            context.getString(R.string.passwords_not_mach)
+        } else if (confirmPassword.length < 6) {
+            context.getString(R.string.passwords_length_wrong)
+        } else {
+            ""
         }
     }
 
-    private fun createImageFile(): Uri {
-        return photoManager.createImageUri()
-    }
-
-    fun launchCamera(cameraLauncher: ManagedActivityResultLauncher<Uri, Boolean>) {
+    fun resetRegisterStatus() {
         _uiState.update { currentState ->
-            currentState.copy(user = currentState.user?.copy(profilePhotoUrl = createImageFile().toString()))
-        }
-        photoManager.launchCamera(cameraLauncher)
-    }
-
-    fun launchGallery(galleryLauncher: ManagedActivityResultLauncher<String, Uri?>) {
-        photoManager.launchGallery(galleryLauncher)
-    }
-
-    fun resetSignOutStatus() {
-        _uiState.update { currentState ->
-            currentState.copy(isSignOut = false)
+            currentState.copy(isSigIn = false, errorMessage = "")
         }
     }
 
-    fun resetUpdatedPasswordStatus() {
+    fun resetConfirmEmail() {
         _uiState.update { currentState ->
-            currentState.copy(isUpdatedPassword = false)
+            currentState.copy(confirmEmail = false)
         }
     }
 }

@@ -17,16 +17,13 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class DeleteAccountViewModel @Inject constructor(
-    private val fireBaseAuth: FireBaseAuth,
-    private val fireBaseStorage: FireBaseStorage
-) : ViewModel() {
-    data class DeleteAccountUIState(
-        var isLoading: Boolean = true,
-        var errorMessage: String = "",
-        var isDelete: Boolean = false,
-        var isReasonsSelected: Boolean = false
-    )
+class DeleteAccountViewModel @Inject constructor(private val fireBaseAuth: FireBaseAuth,
+                                                 private val fireBaseStorage: FireBaseStorage) :
+    ViewModel() {
+    data class DeleteAccountUIState(var isLoading: Boolean = true,
+                                    var errorMessage: String = "",
+                                    var isDelete: Boolean = false,
+                                    var isReasonsSelected: Boolean = false)
 
     private val _uiState = MutableStateFlow(DeleteAccountUIState())
     val uiState: StateFlow<DeleteAccountUIState> = _uiState
@@ -34,22 +31,17 @@ class DeleteAccountViewModel @Inject constructor(
     fun deleteAccount(context: Context) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                fireBaseStorage.deleteDataFromEmail(fireBaseAuth.getEmail()).fold(
-                    error = {
-                        val errorMsg = when (it) {
-                            is NFCError.FireBaseError -> it.message
-                            NFCError.Default -> context.getString(R.string.unexpected_error)
-                        }
-                        _uiState.update { currentState ->
-                            currentState.copy(
-                                errorMessage = errorMsg
-                            )
-                        }
-                    },
-                    success = {
-                        deleteDataAccount(context)
+                fireBaseStorage.deleteDataFromEmail(fireBaseAuth.getEmail()).fold(error = {
+                    val errorMsg = when (it) {
+                        is NFCError.FireBaseError -> it.message
+                        NFCError.Default -> context.getString(R.string.unexpected_error)
                     }
-                )
+                    _uiState.update { currentState ->
+                        currentState.copy(errorMessage = errorMsg)
+                    }
+                }, success = {
+                    deleteDataAccount(context)
+                })
             }
         }
     }
@@ -57,59 +49,42 @@ class DeleteAccountViewModel @Inject constructor(
     private fun deleteDataAccount(context: Context) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                fireBaseAuth.deleteAccount().fold(
-                    error = {
-                        val errorMsg = when (it) {
-                            is NFCError.FireBaseError -> it.message
-                            NFCError.Default -> context.getString(R.string.unexpected_error)
-                        }
-                        _uiState.update { currentState ->
-                            currentState.copy(
-                                errorMessage = errorMsg
-                            )
-                        }
-                    },
-                    success = {
-                        _uiState.update { currentState ->
-                            currentState.copy(
-                                isDelete = true
-                            )
-                        }
+                fireBaseAuth.deleteAccount().fold(error = {
+                    val errorMsg = when (it) {
+                        is NFCError.FireBaseError -> it.message
+                        NFCError.Default -> context.getString(R.string.unexpected_error)
                     }
-                )
+                    _uiState.update { currentState ->
+                        currentState.copy(errorMessage = errorMsg)
+                    }
+                }, success = {
+                    _uiState.update { currentState ->
+                        currentState.copy(isDelete = true)
+                    }
+                })
             }
         }
     }
 
-    fun saveDeleteAccountReason(reasons: List<String>) {
+    fun saveDeleteAccountReason(reasons: List<String>, context: Context) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                fireBaseStorage.saveDeleteReason(reasons).fold(
-                    error = {
-                        _uiState.update { currentState ->
-                            currentState.copy(
-                                errorMessage = "We have some issues.\nPlease try to delete the account in a few minutes"
-                            )
-                        }
-                    },
-                    success = {
-                        _uiState.update { currentState ->
-                            currentState.copy(
-                                isReasonsSelected = true
-                            )
-                        }
+                fireBaseStorage.saveDeleteReason(reasons).fold(error = {
+                    _uiState.update { currentState ->
+                        currentState.copy(errorMessage = context.getString(R.string.delete_reasons_error))
                     }
-                )
+                }, success = {
+                    _uiState.update { currentState ->
+                        currentState.copy(isReasonsSelected = true)
+                    }
+                })
             }
         }
     }
 
     fun resetVariables() {
         _uiState.update { currentState ->
-            currentState.copy(
-                isDelete = false,
-                isReasonsSelected = false
-            )
+            currentState.copy(isDelete = false, isReasonsSelected = false)
         }
     }
 }

@@ -13,7 +13,7 @@ import com.example.nfc.view.home.viewModel.HomeViewModel
 import com.example.nfc.view.login.viewModel.LoginViewModel
 import com.example.nfc.view.navigation.NavigationGraph
 import com.example.nfc.view.profile.viewModel.ProfileViewModel
-import com.example.nfc.view.register.RegisterViewModel.RegisterViewModel
+import com.example.nfc.view.register.viewModel.RegisterViewModel
 import com.google.firebase.FirebaseApp
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -35,16 +35,14 @@ class MainActivity @Inject constructor() : AppCompatActivity() {
         enableEdgeToEdge()
         FirebaseApp.initializeApp(this)
         setContent {
-            NavigationGraph(
-                signInViewModel,
+            NavigationGraph(signInViewModel,
                 registerViewModel,
                 homeViewModel,
                 accountViewModel,
                 forgetPasswordViewModel,
                 deleteAccountViewModel,
                 faqViewModel,
-                aboutInfoViewModel
-            )
+                aboutInfoViewModel)
 
         }
     }

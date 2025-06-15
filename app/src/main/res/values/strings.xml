@@ -96,4 +96,10 @@ Please check your email and follow the confirmation link. </string>
     <string name="card_transport_icon1"> Bus. </string>
     <string name="card_transport_icon2"> Metro. </string>
     <string name="card_transport_icon3"> Other services. </string>
+    <string name="delete_reasons_error">  We have some issues.\nPlease try to delete the account in a few minutes </string>
+    <string name="permission_denied">You do not have permission to access this data.</string>
+    <string name="not_found">The requested information was not found.</string>
+    <string name="unavailable">The service is currently unavailable.</string>
+    <string name="deadline_exceeded">The request took too long to respond.</string>
+    <string name="aborted">The operation was cancelled.</string>
 </resources>

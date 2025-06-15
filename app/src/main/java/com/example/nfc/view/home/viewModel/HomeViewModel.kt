@@ -21,46 +21,36 @@ import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(
-    private val fireBaseAuth: FireBaseAuth,
-    private val fireBaseStorage: FireBaseStorage
-) : ViewModel() {
-    data class HomeUIState(
-        var isLoading: Boolean = true,
-        var errorMessage: String = "",
-        var user: User? = null
-    )
+class HomeViewModel @Inject constructor(private val fireBaseAuth: FireBaseAuth,
+                                        private val fireBaseStorage: FireBaseStorage) :
+    ViewModel() {
+    data class HomeUIState(var isLoading: Boolean = true,
+                           var errorMessage: String = "",
+                           var user: User? = null)
 
     private val _uiState = MutableStateFlow(HomeUIState())
     val uiState: StateFlow<HomeUIState> = _uiState
 
-    fun enableNFC(){
+    fun enableNFC() {
         MyHostApduService.enable = true
     }
+
     fun fetchUserData(context: Context) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                fireBaseStorage.fetchUserData(fireBaseAuth.getEmail()).fold(
-                    error = {
-                        val errorMsg = when (it) {
-                            is NFCError.FireBaseError -> it.message
-                            NFCError.Default -> context.getString(R.string.unexpected_error)
-                        }
-                        _uiState.update { currentState ->
-                            currentState.copy(
-                                errorMessage = errorMsg
-                            )
-                        }
-                    },
-                    success = {
-                        _uiState.update { currentState ->
-                            currentState.copy(
-                                isLoading = false,
-                                user = it
-                            )
-                        }
+                fireBaseStorage.fetchUserData(fireBaseAuth.getEmail()).fold(error = {
+                    val errorMsg = when (it) {
+                        is NFCError.FireBaseError -> it.message
+                        NFCError.Default -> context.getString(R.string.unexpected_error)
                     }
-                )
+                    _uiState.update { currentState ->
+                        currentState.copy(errorMessage = errorMsg)
+                    }
+                }, success = {
+                    _uiState.update { currentState ->
+                        currentState.copy(isLoading = false, user = it)
+                    }
+                })
             }
         }
     }

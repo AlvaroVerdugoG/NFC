@@ -1,6 +1,5 @@
 package com.example.nfc.data.preference
 
-import com.example.nfc.model.User
 
 interface Preference {
     fun getBooleanUserData(): Boolean

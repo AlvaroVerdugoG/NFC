@@ -44,98 +44,67 @@ import com.example.nfc.view.home.viewModel.HomeViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(
-    homeViewModel: HomeViewModel,
-    onAccountClicked: () -> Unit,
-    onFAQClick: () -> Unit,
-    onAboutClick: () -> Unit,
-    onDeleteAccountClick: () -> Unit
-) {
+fun HomeScreen(homeViewModel: HomeViewModel,
+               onAccountClicked: () -> Unit,
+               onFAQClick: () -> Unit,
+               onAboutClick: () -> Unit,
+               onDeleteAccountClick: () -> Unit) {
     var isPressed by remember { mutableStateOf(false) }
     var menuExpanded by remember { mutableStateOf(false) }
-    val context =
-        LocalContext.current
+    val context = LocalContext.current
     val uiState by homeViewModel.uiState.collectAsState()
 
     homeViewModel.fetchUserData(context)
 
-    Box(
-        modifier = Modifier.pointerInput(Unit) {
-            detectHorizontalDragGestures { change, dragAmount ->
-                if (!menuExpanded) {
-                    menuExpanded = true
-                }
+    Box(modifier = Modifier.pointerInput(Unit) {
+        detectHorizontalDragGestures { change, dragAmount ->
+            if (!menuExpanded) {
+                menuExpanded = true
             }
         }
-    ) {
-        Scaffold(
-            topBar = {
-                CenterAlignedTopAppBar(
-                    title = {
-                        Text(
-                            text = stringResource(R.string.app_name),
-                            modifier = Modifier.fillMaxWidth(),
-                            textAlign = TextAlign.Center
-                        )
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = { onAccountClicked() }) {
-                            Icon(
-                                imageVector = Icons.Filled.AccountCircle,
-                                contentDescription = stringResource(R.string.account_icon)
-                            )
-                        }
-                    },
-                    actions = {
-                        IconButton(onClick = { menuExpanded = true }) {
-                            Icon(
-                                imageVector = Icons.Filled.DensitySmall,
-                                contentDescription = stringResource(R.string.menu_icon)
-                            )
-                        }
-                        Menu(
-                            expanded = menuExpanded,
-                            onDismissRequest = { menuExpanded = false },
-                            onDeleteAccountClick = onDeleteAccountClick,
-                            onFAQClick = onFAQClick,
-                            onAboutClick = onAboutClick
-                        )
-                    }
-                )
-            }
-        ) { paddingValues ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
+    }) {
+        Scaffold(topBar = {
+            CenterAlignedTopAppBar(title = {
+                Text(text = stringResource(R.string.app_name),
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center)
+            }, navigationIcon = {
+                IconButton(onClick = { onAccountClicked() }) {
+                    Icon(imageVector = Icons.Filled.AccountCircle,
+                        contentDescription = stringResource(R.string.account_icon))
+                }
+            }, actions = {
+                IconButton(onClick = { menuExpanded = true }) {
+                    Icon(imageVector = Icons.Filled.DensitySmall,
+                        contentDescription = stringResource(R.string.menu_icon))
+                }
+                Menu(expanded = menuExpanded,
+                    onDismissRequest = { menuExpanded = false },
+                    onDeleteAccountClick = onDeleteAccountClick,
+                    onFAQClick = onFAQClick,
+                    onAboutClick = onAboutClick)
+            })
+        }) { paddingValues ->
+            Column(modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
                 verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(400.dp)
-                        .pointerInput(Unit) {
-                            detectTapGestures(
-                                onLongPress = {
-                                    homeViewModel.enableNFC()
-                                    Toast.makeText(
-                                        context,
-                                        context.getString(R.string.NFC_communication_text_info),
-                                        Toast.LENGTH_LONG
-                                    ).show()
-                                },
-                                onPress = {
-                                    tryAwaitRelease()
-                                    isPressed = !isPressed
-                                }
-                            )
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Crossfade(
-                        targetState = isPressed,
-                        animationSpec = tween(durationMillis = 500)
-                    ) { state ->
+                horizontalAlignment = Alignment.CenterHorizontally) {
+                Box(modifier = Modifier
+                    .size(400.dp)
+                    .pointerInput(Unit) {
+                        detectTapGestures(onLongPress = {
+                            homeViewModel.enableNFC()
+                            Toast.makeText(context,
+                                context.getString(R.string.NFC_communication_text_info),
+                                Toast.LENGTH_LONG).show()
+                        }, onPress = {
+                            tryAwaitRelease()
+                            isPressed = !isPressed
+                        })
+                    }, contentAlignment = Alignment.Center) {
+                    Crossfade(targetState = isPressed,
+                        animationSpec = tween(durationMillis = 500)) { state ->
                         if (!uiState.isLoading) {
                             CardNFC(
                                 state,
@@ -147,12 +116,10 @@ fun HomeScreen(
                     }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = stringResource(R.string.NFC_communication_text),
+                Text(text = stringResource(R.string.NFC_communication_text),
                     fontSize = 18.sp,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
-                )
+                    modifier = Modifier.fillMaxWidth())
             }
         }
     }

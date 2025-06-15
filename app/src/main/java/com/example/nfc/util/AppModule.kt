@@ -1,6 +1,5 @@
-package com.example.nfc.di
+package com.example.nfc.util
 
-import android.content.SharedPreferences
 import com.example.nfc.data.preference.CommonPreference
 import com.example.nfc.data.preference.Preference
 import com.example.nfc.data.services.FireBaseAuth
@@ -19,18 +18,13 @@ abstract class AppModule {
 
     @Binds
     @Singleton
-    abstract fun bindFireBaseAuth(
-        fireBaseAuth: FireBaseAuth
-    ): FireBaseAuthService
+    abstract fun bindFireBaseAuth(fireBaseAuth: FireBaseAuth): FireBaseAuthService
 
     @Binds
     @Singleton
-    abstract fun bindPhotoManager(
-        photoManager: PhotoManager
-    ): PhotoManagerService
+    abstract fun bindPhotoManager(photoManager: PhotoManager): PhotoManagerService
+
     @Binds
     @Singleton
-    abstract fun bindPreferences(
-        preferences: CommonPreference
-    ): Preference
+    abstract fun bindPreferences(preferences: CommonPreference): Preference
 }

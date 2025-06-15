@@ -5,16 +5,12 @@ import com.example.nfc.view.login.view.LoginScreen
 import com.example.nfc.view.login.viewModel.LoginViewModel
 
 @Composable
-fun RouteLogIn(
-    loginViewModel: LoginViewModel,
-    onLoginClick: () -> Unit,
-    registerClick: () -> Unit,
-    onForgetPasswordClick: () -> Unit
-) {
-    LoginScreen(
-        loginViewModel = loginViewModel,
+fun RouteLogIn(loginViewModel: LoginViewModel,
+               onLoginClick: () -> Unit,
+               registerClick: () -> Unit,
+               onForgetPasswordClick: () -> Unit) {
+    LoginScreen(loginViewModel = loginViewModel,
         onLoginClick = onLoginClick,
         registerClick = registerClick,
-        onForgetPasswordClick = onForgetPasswordClick
-    )
+        onForgetPasswordClick = onForgetPasswordClick)
 }
