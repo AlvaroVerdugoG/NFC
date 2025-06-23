@@ -113,10 +113,10 @@ class ProfileViewModel @Inject constructor(private val fireBaseAuth: FireBaseAut
     }
 
     fun launchCamera(cameraLauncher: ManagedActivityResultLauncher<Uri, Boolean>) {
+        photoManager.launchCamera(cameraLauncher)
         _uiState.update { currentState ->
             currentState.copy(user = currentState.user?.copy(profilePhotoUrl = createImageFile().toString()))
         }
-        photoManager.launchCamera(cameraLauncher)
     }
 
     fun launchGallery(galleryLauncher: ManagedActivityResultLauncher<String, Uri?>) {

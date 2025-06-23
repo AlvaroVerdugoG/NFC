@@ -9,6 +9,7 @@ import com.example.nfc.model.error.Success
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -34,7 +35,7 @@ class FireBaseStorage @Inject constructor(@ApplicationContext private val contex
                                             newPhotoUrl: String): Either<NFCError, Success> {
         return try {
             firestore.document("users/${email}").update("profilePhotoUrl", newPhotoUrl).await()
-
+            delay(1000)
             Either.Right(Success)
         } catch (e: Exception) {
             val error = handleError(e)

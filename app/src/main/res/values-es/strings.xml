@@ -39,7 +39,7 @@
     <string name="instruction_info">Por favor, ingresa tu correo electrónico para enviarte la instrucción</string>
     <string name="reset_password">Restablecer contraseña</string>
     <string name="password_required"> El campo contraseña es obligatoria. </string>
-    <string name="validate_password"> Neceditas validar la contraseña. </string>
+    <string name="validate_password"> Necesitas validar la contraseña. </string>
     <string name="passwords_not_mach"> Las contraseñas no coinciden. </string>
     <string name="passwords_length_wrong"> La longitud de la contrasseña debe contener al menos 6 caracteres. </string>
     <string name="instruction_text">Por favor, revisa tu correo electrónico y sigue las instrucciones para continuar.Si no has recibido el correo, selecciona reenviar el correo.</string>
